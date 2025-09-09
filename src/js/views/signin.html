@@ -1,0 +1,18 @@
+<div id="signin" class="container">
+    <div class="form-container">
+        <h2>OraBank Sign In</h2>
+        <oj-c-form-layout id="signinForm" max-columns="1" direction="column">
+            <oj-c-input-text id="signinEmail" label-hint="Email Address" placeholder="Enter your email"
+                value="{{email}}" required="true" messages-custom="[[emailError]]" on-blur="[[onEmailBlur]]">
+            </oj-c-input-text>
+            <oj-c-input-password id="signinPassword" label-hint="Password" placeholder="Enter your password"
+                value="{{password}}" required="true" messages-custom="[[passwordError]]" on-blur="[[onPasswordBlur]]">
+            </oj-c-input-password>
+            <oj-c-button id="signinButton" label="Sign In" on-oj-action="[[signIn]]">
+            </oj-c-button>
+        </oj-c-form-layout>
+        <div>
+            <p>Don't have an account? <a href="#" on-click="[[showSignUp]]">Sign Up</a></p>
+        </div>
+    </div>
+</div>

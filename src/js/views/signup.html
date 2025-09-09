@@ -1,0 +1,32 @@
+<div id="signup" class="container">
+    
+    <div class="form-container">
+        <h2>Join OraBank</h2>
+        <oj-c-form-layout id="signupForm" max-columns="1" direction="column">
+            <oj-c-input-text id="fullName" label-hint="Full Name" placeholder="Enter your full name"
+                value="{{fullName}}" required="true" messages-custom="[[fullNameError]]" on-blur="[[onFullNameBlur]]">
+            </oj-c-input-text>
+            <oj-c-input-text id="signupEmail" label-hint="Email Address" placeholder="Enter email address"
+                value="{{email}}" required="true" messages-custom="[[emailError]]" on-blur="[[onEmailBlur]]">
+            </oj-c-input-text>
+            <oj-c-input-text id="phoneNumber" label-hint="Phone Number" placeholder="Enter phone number"
+                value="{{phoneNumber}}" required="true" messages-custom="[[phoneNumberError]]"
+                on-blur="[[onPhoneNumberBlur]]">
+            </oj-c-input-text>
+            <oj-c-input-date-picker id="dateOfBirth" label-hint="Date of Birth" value="{{dateOfBirth}}"
+                required="false">
+            </oj-c-input-date-picker>
+            <oj-c-input-password id="signupPassword" label-hint="Password" placeholder="Create password"
+                value="{{password}}" required="true" messages-custom="[[passwordError]]" on-blur="[[onPasswordBlur]]">
+            </oj-c-input-password>
+            <oj-c-text-area id="address" label-hint="Address" placeholder="Enter your complete address" rows="3"
+                value="{{address}}" required="true" messages-custom="[[addressError]]" on-blur="[[onAddressBlur]]">
+            </oj-c-text-area>
+        </oj-c-form-layout>
+        <oj-c-button id="signupButton" label="Create Account" on-oj-action="[[signUp]]">
+        </oj-c-button>
+        <div>
+            <p>Already have an account? <a href="#" on-click="[[showSignIn]]">Sign In</a></p>
+        </div>
+    </div>
+</div>

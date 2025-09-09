@@ -1,0 +1,33 @@
+<div id="myAccounts">
+    
+    <h2>My Accounts</h2>
+    <div>
+        <h3>Account Overview</h3>
+    </div>
+    <div>
+        <oj-table id="accountsTable" data="[[accountsDataProvider]]" columns="[[columns]]" selection-mode.row="single"
+            style="width: 100%;">
+            <template slot="rowTemplate" data-oj-as="row">
+                <tr>
+                    <td>
+                        <oj-bind-text value="[[row.data.accountNumber]]"></oj-bind-text>
+                    </td>
+                    <td>
+                        <oj-bind-text value="[[row.data.accountType]]"></oj-bind-text>
+                    </td>
+                    <td>
+                        ₹<oj-bind-text value="[[row.data.balance.toLocaleString()]]"></oj-bind-text>
+                    </td>
+                    <td>
+                        <oj-bind-text value="[[row.data.isActive ? 'Active' : 'Inactive']]"></oj-bind-text>
+                    </td>
+                    <td>
+                        <oj-c-button label="View"
+                            on-oj-action="[[function() { $parent.viewStatement(row.data.accountNumber); }]]">
+                        </oj-c-button>
+                    </td>
+                </tr>
+            </template>
+        </oj-table>
+    </div>
+</div>

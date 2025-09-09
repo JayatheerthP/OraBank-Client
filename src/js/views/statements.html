@@ -1,0 +1,47 @@
+<div id="statement">
+    
+    <h2>Account Statements</h2>
+    <div>
+        <oj-c-select-single
+            id="statementAccount"
+            label-hint="Select Account for Statements"
+            placeholder="Select Account"
+            value="{{selectedAccount}}"
+            data="[[accountsDataProvider]]"
+            item-text="label"
+            on-value-changed="[[onAccountSelected]]">
+        </oj-c-select-single>
+    </div>
+    <div id="statementsTable" :data-oj-bind-if="[[statementsVisible]]">
+        <h3>Transaction History</h3>
+        <oj-table
+            id="statementsTableData"
+            data="[[statementsDataProvider]]"
+            columns="[[columns]]"
+            selection-mode.row="single"
+            style="width: 100%;">
+            <template slot="rowTemplate" data-oj-as="row">
+                <tr>
+                    <td>
+                        <oj-bind-text value="[[new Date(row.data.date).toLocaleDateString()]]"></oj-bind-text>
+                    </td>
+                    <td>
+                        <oj-bind-text value="[[row.data.description]]"></oj-bind-text>
+                    </td>
+                    <td>
+                        <oj-bind-text value="[[row.data.transactionType]]"></oj-bind-text>
+                    </td>
+                    <td>
+                        ₹<oj-bind-text value="[[row.data.amount.toLocaleString()]]"></oj-bind-text>
+                    </td>
+                    <td>
+                        <oj-bind-text value="[[row.data.otherParty || '-']]"></oj-bind-text>
+                    </td>
+                    <td>
+                        <oj-bind-text value="[[row.data.status]]"></oj-bind-text>
+                    </td>
+                </tr>
+            </template>
+        </oj-table>
+    </div>
+</div>

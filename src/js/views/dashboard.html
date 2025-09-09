@@ -1,0 +1,29 @@
+<div id="dashboard">
+  <h2>Dashboard</h2>
+  <!-- Account Cards Section -->
+  <div id="accountCards">
+    <!-- Account cards will be dynamically inserted here by JS 
+    <div>
+        <h3>${account.accountType || 'N/A'}</h3>
+        <p>${account.accountNumber || 'N/A'}</p>
+    </div>
+    <span>${account.isActive ? 'Active' : 'Inactive'}</span>
+    <div>
+        ₹<span>${account.balance ? account.balance.toLocaleString() : '0.00'}</span>
+    </div> 
+    -->
+     
+  </div>
+  <!-- Quick Actions Section -->
+  <div>
+    <h3>Quick Actions</h3>
+    <oj-c-form-layout id="quickActions" max-columns="3" direction="row">
+      <oj-c-button label="Transfer Money" on-oj-action="[[showTransferView]]">
+      </oj-c-button>
+      <oj-c-button label="View Statements" on-oj-action="[[showStatementView]]">
+      </oj-c-button>
+      <oj-c-button label="Create Account" on-oj-action="[[showCreateAccountView]]">
+      </oj-c-button>
+    </oj-c-form-layout>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<div id="transfer">
+    
+    <h2>Transfer Money</h2>
+    <div>
+        <oj-c-form-layout id="transferForm" max-columns="1" direction="column">
+            <oj-c-select-single id="fromAccount" label-hint="From Account" placeholder="Select Account"
+                value="{{fromAccount}}" data="[[accountsDataProvider]]" item-text="accountNumber" required="true"
+                messages-custom="[[fromAccountError]]" on-value-changed="[[validateFromAccount]]">
+            </oj-c-select-single>
+            <oj-c-input-text id="toAccount" label-hint="To Account Number" placeholder="Enter account number"
+                value="{{toAccount}}" required="true" messages-custom="[[toAccountError]]"
+                on-blur="[[onToAccountBlur]]">
+            </oj-c-input-text>
+            <oj-c-input-number id="amount" label-hint="Amount (₹)" placeholder="0.00" value="{{amount}}" min="1"
+                required="true" messages-custom="[[amountError]]" on-blur="[[onAmountBlur]]">
+            </oj-c-input-number>
+            <oj-c-input-text id="branch" label-hint="Branch" placeholder="Branch name" value="{{branch}}"
+                required="true" messages-custom="[[branchError]]" on-blur="[[onBranchBlur]]">
+            </oj-c-input-text>
+            <oj-c-text-area id="description" label-hint="Description" placeholder="Enter transfer description" rows="3"
+                value="{{description}}" required="true" messages-custom="[[descriptionError]]"
+                on-blur="[[onDescriptionBlur]]">
+            </oj-c-text-area>
+        </oj-c-form-layout>
+        <oj-c-button id="transferButton" label="Transfer Money" on-oj-action="[[transferMoney]]">
+        </oj-c-button>
+    </div>
+</div>

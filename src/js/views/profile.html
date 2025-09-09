@@ -1,0 +1,22 @@
+<div id="profile">
+    
+    <h2>Profile</h2>
+    <div>
+        <div>
+            <h3 data-oj-bind-text="fullName"></h3>
+            <p data-oj-bind-text="email"></p>
+        </div>
+        <oj-c-form-layout id="profileForm" max-columns="1" direction="column">
+            <oj-c-input-text id="profileFullName" label-hint="Full Name" value="{{fullName}}" readonly="true">
+            </oj-c-input-text>
+            <oj-c-input-text id="profileEmail" label-hint="Email" value="{{email}}" readonly="true">
+            </oj-c-input-text>
+            <oj-c-input-text id="profilePhone" label-hint="Phone Number" value="{{phoneNumber}}" readonly="true">
+            </oj-c-input-text>
+            <oj-c-input-date-picker id="profileDob" label-hint="Date of Birth" value="{{dateOfBirth}}" readonly="true">
+            </oj-c-input-date-picker>
+            <oj-c-text-area id="profileAddress" label-hint="Address" value="{{address}}" rows="3" readonly="true">
+            </oj-c-text-area>
+        </oj-c-form-layout>
+    </div>
+</div>

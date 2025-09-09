@@ -1,0 +1,25 @@
+<div id="createAccount">
+    
+    <h2>Create New Account</h2>
+    <div>
+        <oj-c-form-layout id="createAccountForm" max-columns="1" direction="column">
+            <oj-c-select-single id="accountType" label-hint="Account Type" placeholder="Select Account Type"
+                value="{{accountType}}" data="[[accountTypesDataProvider]]" item-text="label" required="true"
+                messages-custom="[[accountTypeError]]" on-value-changed="[[validateAccountType]]">
+            </oj-c-select-single>
+            <oj-c-select-single id="currency" label-hint="Currency" placeholder="Select Currency" value="{{currency}}"
+                data="[[currenciesDataProvider]]" item-text="label" required="true" messages-custom="[[currencyError]]"
+                on-value-changed="[[validateCurrency]]">
+            </oj-c-select-single>
+            <oj-c-input-text id="branchName" label-hint="Branch" placeholder="Enter branch name" value="{{branch}}"
+                required="true" messages-custom="[[branchError]]" on-blur="[[onBranchBlur]]">
+            </oj-c-input-text>
+            <oj-c-input-number id="initialDeposit" label-hint="Initial Deposit (₹)" placeholder="Minimum 1000"
+                value="{{initialDeposit}}" min="1000" required="true" messages-custom="[[initialDepositError]]"
+                on-blur="[[onInitialDepositBlur]]">
+            </oj-c-input-number>
+        </oj-c-form-layout>
+        <oj-c-button id="createAccountButton" label="Create Account" on-oj-action="[[createAccount]]">
+        </oj-c-button>
+    </div>
+</div>
