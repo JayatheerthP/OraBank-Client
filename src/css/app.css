@@ -5,38 +5,29 @@
     Description:
         This is where any of your application specific styles should be included
 */
-
-.gradient-bg {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.card-shadow {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+* {
+  font-family: 'Inter', sans-serif;
+  font-style: normal;
+  margin: 0;
+  padding: 0;
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  color: white;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-primary:hover {
+  background: linear-gradient(135deg, #b91c1c, #991b1b);
   transform: translateY(-1px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-}
-
-.account-card {
-  transition: all 0.3s ease;
-}
-
-.account-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-}
-
-.transaction-row:nth-child(even) {
-  background-color: #f8fafc;
-}
-
-.sidebar-active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
 }

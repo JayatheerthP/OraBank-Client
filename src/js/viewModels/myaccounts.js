@@ -19,8 +19,7 @@ define([
                 { headerText: 'Account Number', field: 'accountNumber' },
                 { headerText: 'Type', field: 'accountType' },
                 { headerText: 'Balance', field: 'balance' },
-                { headerText: 'Status', field: 'isActive' },
-                { headerText: 'Actions', field: 'actions', template: 'actionTemplate' }
+                { headerText: 'Status', field: 'isActive' }
             ];
             // Utility to show loading state (placeholder)
             self.showLoading = function (show) {

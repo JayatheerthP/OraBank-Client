@@ -1,7 +1,11 @@
-<div id="signup" class="container">
-    
-    <div class="form-container">
-        <h2>Join OraBank</h2>
+<div id="signup" class="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center py-12">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border-t-4 border-red-600">
+        <div class="text-center mb-8">
+            <i class="fa-solid fa-building-columns text-red-600 mx-auto text-5xl"></i>
+            <h2 class="text-3xl font-bold text-gray-800">Join OraBank</h2>
+            <p class="text-gray-600">Create your account</p>
+        </div>
+
         <oj-c-form-layout id="signupForm" max-columns="1" direction="column">
             <oj-c-input-text id="fullName" label-hint="Full Name" placeholder="Enter your full name"
                 value="{{fullName}}" required="true" messages-custom="[[fullNameError]]" on-blur="[[onFullNameBlur]]">
@@ -22,11 +26,12 @@
             <oj-c-text-area id="address" label-hint="Address" placeholder="Enter your complete address" rows="3"
                 value="{{address}}" required="true" messages-custom="[[addressError]]" on-blur="[[onAddressBlur]]">
             </oj-c-text-area>
+            <oj-c-button id="signupButton" class="w-full" label="Create Account" on-oj-action="[[signUp]]">
+            </oj-c-button>
         </oj-c-form-layout>
-        <oj-c-button id="signupButton" label="Create Account" on-oj-action="[[signUp]]">
-        </oj-c-button>
         <div>
-            <p>Already have an account? <a on-click="[[showSignIn]]">Sign In</a></p>
+            <span>Already have an account?</span>
+            <a on-click="[[showSignIn]]">Sign In</a>
         </div>
     </div>
 </div>

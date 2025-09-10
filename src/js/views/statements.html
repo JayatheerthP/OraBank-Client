@@ -1,25 +1,20 @@
-<div id="statement">
-    
-    <h2>Account Statements</h2>
-    <div>
-        <oj-c-select-single
-            id="statementAccount"
-            label-hint="Select Account for Statements"
-            placeholder="Select Account"
-            value="{{selectedAccount}}"
-            data="[[accountsDataProvider]]"
-            item-text="label"
+<div id="statement" class="flex flex-col gap-8 p-6 bg-gray-50 h-full">
+    <div class="flex flex-col gap-4">
+        <div class="flex flex-col flex-wrap justify-center">
+            <span class="text-3xl font-bold text-gray-800">Account Statements</span>
+            <span class="text-gray-600">Please select account to view statement</span>
+        </div>
+        <oj-c-select-single id="statementAccount" label-hint="Select Account for Statements"
+            placeholder="Select Account" value="{{selectedAccount}}" data="[[accountsDataProvider]]" item-text="label"
             on-value-changed="[[onAccountSelected]]">
         </oj-c-select-single>
     </div>
-    <div id="statementsTable" :data-oj-bind-if="[[statementsVisible]]">
-        <h3>Transaction History</h3>
-        <oj-table
-            id="statementsTableData"
-            data="[[statementsDataProvider]]"
-            columns="[[columns]]"
-            selection-mode.row="single"
-            style="width: 100%;">
+    <div class="bg-white rounded-xl shadow-lg p-4 w-full flex flex-col gap-2">
+        <div class="flex flex-col flex-wrap justify-center">
+            <span class="text-3xl font-bold text-gray-800">Transaction History</span>
+        </div>
+        <oj-table id="statementsTableData" data="[[statementsDataProvider]]" columns="[[columns]]"
+            selection-mode.row="single" style="width: 100%;background: white;">
             <template slot="rowTemplate" data-oj-as="row">
                 <tr>
                     <td>

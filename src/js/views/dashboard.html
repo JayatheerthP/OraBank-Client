@@ -1,22 +1,15 @@
-<div id="dashboard">
-  <h2>Dashboard</h2>
-  <!-- Account Cards Section -->
-  <div id="accountCards">
-    <!-- Account cards will be dynamically inserted here by JS 
-    <div>
-        <h3>${account.accountType || 'N/A'}</h3>
-        <p>${account.accountNumber || 'N/A'}</p>
+<div id="dashboard" class="flex flex-col gap-8 p-8 bg-gray-50">
+  <div class="flex flex-col gap-3 flex-wrap">
+    <span class="text-2xl font-bold text-gray-800">Your Accounts</span>
+    <!-- Account Cards Section -->
+    <div id="accountCards" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
     </div>
-    <span>${account.isActive ? 'Active' : 'Inactive'}</span>
-    <div>
-        ₹<span>${account.balance ? account.balance.toLocaleString() : '0.00'}</span>
-    </div> 
-    -->
-     
   </div>
+
   <!-- Quick Actions Section -->
-  <div>
-    <h3>Quick Actions</h3>
+  <div class="flex flex-col flex-wrap gap-2">
+    <span class="font-bold text-2xl">Quick Actions</span>
     <oj-c-form-layout id="quickActions" max-columns="3" direction="row">
       <oj-c-button label="Transfer Money" on-oj-action="[[showTransferView]]">
       </oj-c-button>
@@ -26,4 +19,5 @@
       </oj-c-button>
     </oj-c-form-layout>
   </div>
+
 </div>

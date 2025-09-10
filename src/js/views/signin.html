@@ -1,18 +1,26 @@
-<div id="signin" class="container">
-    <div class="form-container">
-        <h2>OraBank Sign In</h2>
-        <oj-c-form-layout id="signinForm" max-columns="1" direction="column">
+<div id="signin" class="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center py-12">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md border-t-4 border-red-600">
+        <div class="text-center mb-8">
+            <i class="fa-solid fa-building-columns text-red-600 mx-auto text-5xl"></i>
+            <h2 class="text-3xl font-bold text-gray-800">OraBank</h2>
+            <p class="text-gray-600">Sign in to your OraBank account</p>
+        </div>
+
+        <oj-c-form-layout id="signinForm" max-columns="1" direction="column" class="space-y-6">
             <oj-c-input-text id="signinEmail" label-hint="Email Address" placeholder="Enter your email"
                 value="{{email}}" required="true" messages-custom="[[emailError]]" on-blur="[[onEmailBlur]]">
             </oj-c-input-text>
             <oj-c-input-password id="signinPassword" label-hint="Password" placeholder="Enter your password"
                 value="{{password}}" required="true" messages-custom="[[passwordError]]" on-blur="[[onPasswordBlur]]">
             </oj-c-input-password>
-            <oj-c-button id="signinButton" label="Sign In" on-oj-action="[[signIn]]">
+
+            <oj-c-button id="signinButton" label="Sign In" class="w-full" on-oj-action="[[signIn]]">
             </oj-c-button>
+
         </oj-c-form-layout>
         <div>
-            <p>Don't have an account? <a on-click="[[showSignUp]]">Sign Up</a></p>
+            <span>Don't have an account?</span>
+            <a on-click="[[showSignUp]]">Sign Up</a>
         </div>
     </div>
 </div>

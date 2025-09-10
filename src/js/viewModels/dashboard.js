@@ -44,14 +44,34 @@ define([
           var cardDiv = document.createElement('div');
           cardDiv.className = 'account-card'; // Optional: Add a class for styling
           cardDiv.innerHTML = `
-            <div>
-                <h3>${account.accountType || 'N/A'}</h3>
-                <p>${account.accountNumber || 'N/A'}</p>
+          <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-600 hover:shadow-xl transition-shadow">
+            <div class="flex justify-between items-start mb-4">
+
+              <div class="flex flex-col gap-1 flex-wrap">
+                <span class="text-xl font-bold text-gray-800">${account.accountType || 'N/A'} Account</span>
+                <span class="text-gray-600">${account.branch}</span>
+              </div>
+              <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
+                ${account.isActive ? 'ACTIVE' : 'INACTIVE'}
+              </span>
+
             </div>
-            <span>${account.isActive ? 'Active' : 'Inactive'}</span>
-            <div>
-                ₹<span>${account.balance ? account.balance.toLocaleString() : '0.00'}</span>
-            </div>
+
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-gray-600">Account Number:</span>
+                <span class="font-semibold text-gray-800">${account.accountNumber || 'N/A'}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Branch:</span>
+                <span class="font-semibold text-gray-800">${account.branch || 'N/A'}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-600">Balance:</span>
+                <span class="font-bold text-green-600 text-xl">₹${account.balance ? account.balance.toLocaleString() : '0.00'}</span>
+              </div>
+            </div>         
+          </div>
           `;
           container.appendChild(cardDiv);
         });
