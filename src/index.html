@@ -52,15 +52,16 @@
 <body class="bg-gray-50">
   <!-- Template for rendering navigation items shared between nav bar and nav list -->
   <script type="text/html" id="navTemplate">
-      <li><a href="#">
-        <span :class="[[$data.detail.iconClass]]"></span>
-        <oj-bind-text value="[[$data.detail.label]]"></oj-bind-text>
-      </a></li>
-    </script>
-
+    <li><a href="#">
+      <span :class="[[$data.detail.iconClass]]"></span>
+      <oj-bind-text value="[[$data.detail.label]]"></oj-bind-text>
+    </a></li>
+  </script>
   <div id="globalBody">
     <div id="pageContent" class="min-h-screen max-h-screen">
-      <nav class="bg-white shadow-lg border-b-2 border-red-600 flex flex-wrap p-5 justify-between" role="navigation">
+      <!-- Conditionally show/hide navbar based on isNavbarVisible observable using visible binding -->
+      <nav class="bg-white shadow-lg border-b-2 border-red-600 flex flex-wrap p-5 justify-between" role="navigation"
+        data-bind="visible: isNavbarVisible">
         <div class="flex justify-center items-center gap-2">
           <i class="fa-solid fa-building-columns text-red-600 text-3xl"></i>
           <span class="text-2xl font-bold text-gray-800">OraBank</span>
@@ -74,11 +75,9 @@
       </oj-module>
     </div>
   </div>
-
   <!-- This injects script tags for the main javascript files -->
   <!-- injector:scripts -->
   <!-- endinjector -->
-
 </body>
 
 </html>
