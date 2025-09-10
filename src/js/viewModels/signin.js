@@ -1,11 +1,12 @@
 define([
     "knockout",
+    "ojs/ojcorerouter",
     "oj-c/input-text",
     "oj-c/input-password",
     "oj-c/button",
-    "oj-c/form-layout"
+    "oj-c/form-layout",
 ],
-    function (ko) {
+    function (ko, CoreRouter) {
         function SignInViewModel() {
             var self = this;
             self.email = ko.observable("");
@@ -16,20 +17,17 @@ define([
             self.API_BASE = {
                 USER: 'http://localhost:8085/userservice/api/v1'
             };
-
             // Utility to show loading state (can be expanded with UI if needed)
             self.showLoading = function (show) {
                 // Placeholder for loading overlay logic if needed
                 console.log(show ? "Loading..." : "Loading complete");
             };
-
             // Utility to show general messages (temporary placeholder for UI feedback)
             self.showMessage = function (msg, type) {
                 // Placeholder for success/error message display
                 console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
-
             // Email Validator Function
             self.validateEmail = function (email) {
                 self.emailError([]); // Clear previous errors
@@ -45,7 +43,6 @@ define([
                 }
                 return true;
             };
-
             // Password Validator Function
             self.validatePassword = function (password) {
                 self.passwordError([]); // Clear previous errors
@@ -59,37 +56,30 @@ define([
                 }
                 return true;
             };
-
             // Real-time validation as user types
             self.email.subscribe(function (newValue) {
                 self.validateEmail(newValue); // Validate on every change
             });
-
             self.password.subscribe(function (newValue) {
                 self.validatePassword(newValue); // Validate on every change
             });
-
             // Validation on blur (optional, as real-time is already covered by subscribe)
             self.onEmailBlur = function () {
                 self.validateEmail(self.email());
             };
-
             self.onPasswordBlur = function () {
                 self.validatePassword(self.password());
             };
-
             // Sign In function with validation
             self.signIn = async function () {
                 var email = self.email();
                 var password = self.password();
                 var isEmailValid = self.validateEmail(email);
                 var isPasswordValid = self.validatePassword(password);
-
                 if (!isEmailValid || !isPasswordValid) {
                     self.showMessage('Please correct the errors before signing in.', 'error');
                     return;
                 }
-
                 try {
                     self.showLoading(true);
                     const response = await fetch(`${self.API_BASE.USER}/users/signin`, {
@@ -100,7 +90,10 @@ define([
                         body: JSON.stringify({ email, password })
                     });
                     if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+                        // Attempt to parse error response body
+                        const errorData = await response.json().catch(() => ({}));
+                        const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
+                        throw new Error(errorMessage);
                     }
                     const data = await response.json();
                     var authToken = data.token;
@@ -108,21 +101,18 @@ define([
                     sessionStorage.setItem('authToken', authToken);
                     sessionStorage.setItem('userId', userId);
                     self.showMessage('Welcome back!', 'success');
-                    // Redirect or navigate to dashboard (placeholder)
-                    console.log("Redirecting to dashboard...");
-                    // Example: window.location.href = 'dashboard.html';
+                    // Navigate to dashboard using CoreRouter
+                    CoreRouter.rootInstance.go({ path: "dashboard" });
                 } catch (error) {
-                    self.showMessage('Invalid email or password', 'error');
+                    self.showMessage(error.message || 'Invalid email or password', 'error');
                 } finally {
                     self.showLoading(false);
                 }
             };
-
             // Placeholder for navigation to Sign Up page
             self.showSignUp = function () {
-                // Implement navigation to signup page
-                console.log("Navigating to Sign Up page...");
-                // Example: window.location.href = 'signup.html';
+                // Navigate to signup page using CoreRouter
+                CoreRouter.rootInstance.go({ path: "signup" });
             };
         }
         return SignInViewModel;

@@ -6,9 +6,10 @@ define([
     "oj-c/select-single",
     "oj-c/button",
     "oj-c/form-layout",
-    "ojs/ojarraydataprovider"
+    "ojs/ojarraydataprovider",
+    "ojs/ojcorerouter" // Add CoreRouter for navigation
 ],
-    function (ko, InputText, InputNumber, TextArea, SelectSingle, Button, FormLayout, ArrayDataProvider) {
+    function (ko, InputText, InputNumber, TextArea, SelectSingle, Button, FormLayout, ArrayDataProvider, CoreRouter) {
         function TransferViewModel() {
             var self = this;
             // Observables for form fields
@@ -30,26 +31,29 @@ define([
                 ACCOUNT: 'http://localhost:8085/accountservice/api/v1',
                 TRANSACTION: 'http://localhost:8085/transactionservice/api/v1'
             };
-
             // Utility to show loading state (placeholder)
             self.showLoading = function (show) {
                 console.log(show ? "Loading..." : "Loading complete");
             };
-
             // Utility to show messages (temporary placeholder for UI feedback)
             self.showMessage = function (msg, type) {
                 console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
-
             // Utility to get auth headers
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
-
             // Fetch user accounts for dropdown
             self.loadUserAccounts = async function () {
+                var authToken = sessionStorage.getItem('authToken');
+                if (!authToken) {
+                    self.showMessage('Authentication token not found. Please log in again.', 'error');
+                    // Navigate to sign-in page if token is not found
+                    CoreRouter.rootInstance.go({ path: "signin" });
+                    return;
+                }
                 try {
                     self.showLoading(true);
                     const response = await fetch(`${self.API_BASE.ACCOUNT}/accounts/user`, {
@@ -60,23 +64,29 @@ define([
                         }
                     });
                     if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+                        // Attempt to parse error response body
+                        const errorData = await response.json().catch(() => ({}));
+                        const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
+                        throw new Error(errorMessage);
                     }
                     const data = await response.json();
-                    // Assuming data.accounts is the array of accounts
-                    self.accounts(data.accounts || []);
+                    // Format accounts for dropdown (assuming data.accounts is the array)
+                    var accountList = (data.accounts || []).map(acc => ({
+                        accountNumber: acc.accountNumber,
+                        label: `${acc.accountNumber} (${acc.accountType})`
+                    }));
+                    self.accounts(accountList);
                     // Update data provider for oj-c-select-single
                     self.accountsDataProvider(new ArrayDataProvider(self.accounts(), { keyAttributes: 'accountNumber' }));
                 } catch (error) {
-                    self.showMessage('Error loading accounts. Please try again.', 'error');
+                    self.showMessage(error.message || 'Error loading accounts. Please try again.', 'error');
                     console.error(error);
                 } finally {
                     self.showLoading(false);
                 }
             };
-
             // Validation Functions
-            self.validateFromAccount = function (event) {
+            self.validateFromAccount = function () {
                 self.fromAccountError([]);
                 var value = self.fromAccount();
                 if (!value) {
@@ -85,7 +95,6 @@ define([
                 }
                 return true;
             };
-
             self.validateToAccount = function (toAccount) {
                 self.toAccountError([]);
                 var trimmedToAccount = toAccount ? toAccount.trim() : "";
@@ -93,14 +102,12 @@ define([
                     self.toAccountError.push({ summary: "To Account Required", detail: "Please enter a destination account number." });
                     return false;
                 }
-
                 if (trimmedToAccount.length < 5) {
                     self.toAccountError.push({ summary: "Invalid Account Number", detail: "Account number must be at least 5 digits long." });
                     return false;
                 }
                 return true;
             };
-
             self.validateAmount = function (amount) {
                 self.amountError([]);
                 if (amount === null || amount === undefined) {
@@ -113,7 +120,6 @@ define([
                 }
                 return true;
             };
-
             self.validateBranch = function (branch) {
                 self.branchError([]);
                 var trimmedBranch = branch ? branch.trim() : "";
@@ -127,7 +133,6 @@ define([
                 }
                 return true;
             };
-
             self.validateDescription = function (description) {
                 self.descriptionError([]);
                 var trimmedDescription = description ? description.trim() : "";
@@ -141,7 +146,6 @@ define([
                 }
                 return true;
             };
-
             // Real-time validation as user types or selects
             self.fromAccount.subscribe(function (newValue) {
                 self.validateFromAccount();
@@ -158,7 +162,6 @@ define([
             self.description.subscribe(function (newValue) {
                 self.validateDescription(newValue);
             });
-
             // Validation on blur (optional, as real-time is covered by subscribe)
             self.onToAccountBlur = function () {
                 self.validateToAccount(self.toAccount());
@@ -172,7 +175,6 @@ define([
             self.onDescriptionBlur = function () {
                 self.validateDescription(self.description());
             };
-
             // Transfer Money function with validation
             self.transferMoney = async function () {
                 var fromAccountNumber = self.fromAccount();
@@ -180,19 +182,16 @@ define([
                 var amount = self.amount();
                 var branch = self.branch() ? self.branch().trim() : "";
                 var description = self.description() ? self.description().trim() : "";
-
                 // Validate all fields before submission
                 var isFromAccountValid = self.validateFromAccount();
                 var isToAccountValid = self.validateToAccount(toAccountNumber);
                 var isAmountValid = self.validateAmount(amount);
                 var isBranchValid = self.validateBranch(branch);
                 var isDescriptionValid = self.validateDescription(description);
-
                 if (!(isFromAccountValid && isToAccountValid && isAmountValid && isBranchValid && isDescriptionValid)) {
                     self.showMessage('Please correct the errors before transferring money.', 'error');
                     return;
                 }
-
                 try {
                     self.showLoading(true);
                     const response = await fetch(`${self.API_BASE.TRANSACTION}/transactions/transact`, {
@@ -211,7 +210,10 @@ define([
                         })
                     });
                     if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+                        // Attempt to parse error response body
+                        const errorData = await response.json().catch(() => ({}));
+                        const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
+                        throw new Error(errorMessage);
                     }
                     await response.json();
                     self.showMessage('Transfer completed successfully!', 'success');
@@ -221,22 +223,19 @@ define([
                     self.amount(null);
                     self.branch("");
                     self.description("");
-                    // Placeholder for navigation or refresh (e.g., to Dashboard)
-                    console.log("Navigating to Dashboard...");
-                    // Example: window.location.href = 'dashboard.html';
+                    // Navigate to dashboard or accounts page after successful transfer
+                    CoreRouter.rootInstance.go({ path: "dashboard" });
                 } catch (error) {
-                    self.showMessage('Transfer failed. Please try again.', 'error');
+                    self.showMessage(error.message || 'Transfer failed. Please try again.', 'error');
                     console.error(error);
                 } finally {
                     self.showLoading(false);
                 }
             };
-
             // Initialize the component (load accounts on load)
             self.initialize = function () {
                 self.loadUserAccounts();
             };
-
             // Call initialize when the component is loaded
             self.initialize();
         }

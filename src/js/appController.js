@@ -51,6 +51,8 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       });
       router.sync();
 
+      CoreRouter.rootInstance = router;
+
       this.moduleAdapter = new ModuleRouterAdapter(router);
 
       this.selection = new KnockoutRouterAdapter(router);

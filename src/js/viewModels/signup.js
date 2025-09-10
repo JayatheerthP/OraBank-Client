@@ -1,13 +1,14 @@
 define([
     "knockout",
+    "ojs/ojcorerouter",
     "oj-c/input-text",
     "oj-c/input-password",
     "oj-c/text-area",
     "oj-c/button",
     "oj-c/form-layout",
-    "oj-c/input-date-picker"
+    "oj-c/input-date-picker",
 ],
-    function (ko) {
+    function (ko, CoreRouter) {
         function SignUpViewModel() {
             var self = this;
             // Observables for form fields
@@ -26,18 +27,15 @@ define([
             self.API_BASE = {
                 USER: 'http://localhost:8085/userservice/api/v1'
             };
-
             // Utility to show loading state (placeholder)
             self.showLoading = function (show) {
                 console.log(show ? "Loading..." : "Loading complete");
             };
-
             // Utility to show general messages (temporary placeholder)
             self.showMessage = function (msg, type) {
                 console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
-
             // Validation Functions with Trimming for Mandatory Fields
             self.validateFullName = function (fullName) {
                 self.fullNameError([]);
@@ -52,7 +50,6 @@ define([
                 }
                 return true;
             };
-
             self.validateEmail = function (email) {
                 self.emailError([]);
                 var trimmedEmail = email ? email.trim() : "";
@@ -67,7 +64,6 @@ define([
                 }
                 return true;
             };
-
             self.validatePhoneNumber = function (phoneNumber) {
                 self.phoneNumberError([]);
                 var trimmedPhoneNumber = phoneNumber ? phoneNumber.trim() : "";
@@ -82,7 +78,6 @@ define([
                 }
                 return true;
             };
-
             self.validatePassword = function (password) {
                 self.passwordError([]);
                 var trimmedPassword = password ? password.trim() : "";
@@ -96,7 +91,6 @@ define([
                 }
                 return true;
             };
-
             self.validateAddress = function (address) {
                 self.addressError([]);
                 var trimmedAddress = address ? address.trim() : "";
@@ -110,7 +104,6 @@ define([
                 }
                 return true;
             };
-
             // Real-time validation as user types
             self.fullName.subscribe(function (newValue) {
                 self.validateFullName(newValue);
@@ -127,7 +120,6 @@ define([
             self.address.subscribe(function (newValue) {
                 self.validateAddress(newValue);
             });
-
             // Validation on blur (optional, as real-time is covered by subscribe)
             self.onFullNameBlur = function () {
                 self.validateFullName(self.fullName());
@@ -144,7 +136,6 @@ define([
             self.onAddressBlur = function () {
                 self.validateAddress(self.address());
             };
-
             // Sign Up function with validation
             self.signUp = async function () {
                 var fields = {
@@ -155,19 +146,16 @@ define([
                     password: self.password() ? self.password().trim() : "",
                     address: self.address() ? self.address().trim() : ""
                 };
-
                 // Validate all fields before submission (except dateOfBirth)
                 var isFullNameValid = self.validateFullName(fields.fullName);
                 var isEmailValid = self.validateEmail(fields.email);
                 var isPhoneNumberValid = self.validatePhoneNumber(fields.phoneNumber);
                 var isPasswordValid = self.validatePassword(fields.password);
                 var isAddressValid = self.validateAddress(fields.address);
-
                 if (!(isFullNameValid && isEmailValid && isPhoneNumberValid && isPasswordValid && isAddressValid)) {
                     self.showMessage('Please correct the errors before signing up.', 'error');
                     return;
                 }
-
                 try {
                     self.showLoading(true);
                     const response = await fetch(`${self.API_BASE.USER}/users/signup`, {
@@ -178,25 +166,25 @@ define([
                         body: JSON.stringify(fields)
                     });
                     if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+                        // Attempt to parse error response body
+                        const errorData = await response.json().catch(() => ({}));
+                        const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
+                        throw new Error(errorMessage);
                     }
                     await response.json();
                     self.showMessage('Account created successfully! Please sign in.', 'success');
-                    // Redirect or navigate to sign-in page (placeholder)
-                    console.log("Navigating to Sign In page...");
-                    // Example: window.location.href = 'signin.html';
+                    // Navigate to sign-in page using CoreRouter
+                    CoreRouter.rootInstance.go({ path: "signin" });
                 } catch (error) {
-                    self.showMessage('Error creating account. Please try again.', 'error');
+                    self.showMessage(error.message || 'Error creating account. Please try again.', 'error');
                 } finally {
                     self.showLoading(false);
                 }
             };
-
-            // Placeholder for navigation to Sign In page
+            // Navigation to Sign In page
             self.showSignIn = function () {
-                // Implement navigation to signin page
-                console.log("Navigating to Sign In page...");
-                // Example: window.location.href = 'signin.html';
+                // Navigate to sign-in page using CoreRouter
+                CoreRouter.rootInstance.go({ path: "signin" });
             };
         }
         return SignUpViewModel;

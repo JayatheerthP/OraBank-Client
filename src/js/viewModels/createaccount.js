@@ -5,9 +5,10 @@ define([
     "oj-c/select-single",
     "oj-c/button",
     "oj-c/form-layout",
-    "ojs/ojarraydataprovider"
+    "ojs/ojarraydataprovider",
+    "ojs/ojcorerouter" // Add CoreRouter for navigation
 ],
-    function (ko, InputText, InputNumber, SelectSingle, Button, FormLayout, ArrayDataProvider) {
+    function (ko, InputText, InputNumber, SelectSingle, Button, FormLayout, ArrayDataProvider, CoreRouter) {
         function CreateAccountViewModel() {
             var self = this;
             // Observables for form fields
@@ -23,7 +24,6 @@ define([
             self.API_BASE = {
                 ACCOUNT: 'http://localhost:8085/accountservice/api/v1'
             };
-
             // Data for dropdowns
             self.accountTypes = [
                 { value: "SAVINGS", label: "Savings Account" },
@@ -36,30 +36,25 @@ define([
                 { value: "USD", label: "USD - US Dollar" },
                 { value: "EUR", label: "EUR - Euro" }
             ];
-
             // Data providers for dropdowns
             self.accountTypesDataProvider = new ArrayDataProvider(self.accountTypes, { keyAttributes: 'value' });
             self.currenciesDataProvider = new ArrayDataProvider(self.currencies, { keyAttributes: 'value' });
-
             // Utility to show loading state (placeholder)
             self.showLoading = function (show) {
                 console.log(show ? "Loading..." : "Loading complete");
             };
-
             // Utility to show messages (temporary placeholder for UI feedback)
             self.showMessage = function (msg, type) {
                 console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
-
             // Utility to get auth headers
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
-
             // Validation Functions
-            self.validateAccountType = function (event) {
+            self.validateAccountType = function () {
                 self.accountTypeError([]);
                 var value = self.accountType();
                 if (!value) {
@@ -68,8 +63,7 @@ define([
                 }
                 return true;
             };
-
-            self.validateCurrency = function (event) {
+            self.validateCurrency = function () {
                 self.currencyError([]);
                 var value = self.currency();
                 if (!value) {
@@ -78,7 +72,6 @@ define([
                 }
                 return true;
             };
-
             self.validateBranch = function (branch) {
                 self.branchError([]);
                 var trimmedBranch = branch ? branch.trim() : "";
@@ -92,7 +85,6 @@ define([
                 }
                 return true;
             };
-
             self.validateInitialDeposit = function (initialDeposit) {
                 self.initialDepositError([]);
                 if (initialDeposit === null || initialDeposit === undefined) {
@@ -105,7 +97,6 @@ define([
                 }
                 return true;
             };
-
             // Real-time validation as user types or selects
             self.accountType.subscribe(function (newValue) {
                 self.validateAccountType();
@@ -119,7 +110,6 @@ define([
             self.initialDeposit.subscribe(function (newValue) {
                 self.validateInitialDeposit(newValue);
             });
-
             // Validation on blur (optional, as real-time is covered by subscribe)
             self.onBranchBlur = function () {
                 self.validateBranch(self.branch());
@@ -127,25 +117,28 @@ define([
             self.onInitialDepositBlur = function () {
                 self.validateInitialDeposit(self.initialDeposit());
             };
-
             // Create Account function with validation
             self.createAccount = async function () {
+                var authToken = sessionStorage.getItem('authToken');
+                if (!authToken) {
+                    self.showMessage('Authentication token not found. Please log in again.', 'error');
+                    // Navigate to sign-in page if token is not found
+                    CoreRouter.rootInstance.go({ path: "signin" });
+                    return;
+                }
                 var accountType = self.accountType();
                 var currency = self.currency();
                 var branch = self.branch() ? self.branch().trim() : "";
                 var initialDeposit = self.initialDeposit();
-
                 // Validate all fields before submission
                 var isAccountTypeValid = self.validateAccountType();
                 var isCurrencyValid = self.validateCurrency();
                 var isBranchValid = self.validateBranch(branch);
                 var isInitialDepositValid = self.validateInitialDeposit(initialDeposit);
-
                 if (!(isAccountTypeValid && isCurrencyValid && isBranchValid && isInitialDepositValid)) {
                     self.showMessage('Please correct the errors before creating an account.', 'error');
                     return;
                 }
-
                 try {
                     self.showLoading(true);
                     const response = await fetch(`${self.API_BASE.ACCOUNT}/accounts/createaccount`, {
@@ -162,7 +155,10 @@ define([
                         })
                     });
                     if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
+                        // Attempt to parse error response body
+                        const errorData = await response.json().catch(() => ({}));
+                        const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
+                        throw new Error(errorMessage);
                     }
                     await response.json();
                     self.showMessage('Account created successfully!', 'success');
@@ -171,16 +167,21 @@ define([
                     self.currency("INR");
                     self.branch("");
                     self.initialDeposit(null);
-                    // Placeholder for navigation or refresh (e.g., to My Accounts page)
-                    console.log("Navigating to My Accounts page...");
-                    // Example: window.location.href = 'myaccounts.html';
+                    // Navigate to dashboard or accounts page after successful creation
+                    CoreRouter.rootInstance.go({ path: "dashboard" });
                 } catch (error) {
-                    self.showMessage('Error creating account. Please try again.', 'error');
+                    self.showMessage(error.message || 'Error creating account. Please try again.', 'error');
                     console.error(error);
                 } finally {
                     self.showLoading(false);
                 }
             };
+            // Initialize the component (no API load needed on init)
+            self.initialize = function () {
+                // Placeholder for any initialization logic if needed
+            };
+            // Call initialize when the component is loaded
+            self.initialize();
         }
         return CreateAccountViewModel;
     });
