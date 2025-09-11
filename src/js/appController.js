@@ -24,14 +24,14 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
       let navData = [
         { path: '', redirect: 'dashboard' },
-        { path: 'dashboard', detail: { label: 'Dashboard', iconClass: 'oj-ux-ico-information-s' } },
+        { path: 'dashboard', detail: { label: 'Dashboard', iconClass: 'oj-ux-ico-home' } },
         { path: 'signin', detail: { label: 'Sign In', iconClass: 'oj-ux-ico-information-s' } },
         { path: 'signup', detail: { label: 'Sign Up', iconClass: 'oj-ux-ico-information-s' } },
-        { path: 'myaccounts', detail: { label: 'My Accounts', iconClass: 'oj-ux-ico-information-s' } },
+        { path: 'myaccounts', detail: { label: 'My Accounts', iconClass: 'oj-ux-ico-content-item-list' } },
         { path: 'statements', detail: { label: 'Statements', iconClass: 'oj-ux-ico-information-s' } },
-        { path: 'createaccount', detail: { label: 'Create Account', iconClass: 'oj-ux-ico-information-s' } },
-        { path: 'transfer', detail: { label: 'Transfer', iconClass: 'oj-ux-ico-information-s' } },
-        { path: 'profile', detail: { label: 'Profile', iconClass: 'oj-ux-ico-information-s' } },
+        { path: 'createaccount', detail: { label: 'Create Account', iconClass: 'oj-ux-ico-edit-plus' } },
+        { path: 'transfer', detail: { label: 'Transfer', iconClass: 'oj-ux-ico-transfer-money' } },
+        { path: 'profile', detail: { label: 'Profile', iconClass: 'oj-ux-ico-user-configuration' } },
       ];
       // Router setup
       let router = new CoreRouter(navData, {
