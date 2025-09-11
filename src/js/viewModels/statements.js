@@ -46,7 +46,6 @@ define([
             self.loadUserAccounts = async function () {
                 var authToken = sessionStorage.getItem('authToken');
                 if (!authToken) {
-                    self.showMessage('Authentication token not found. Please log in again.', 'error');
                     // Navigate to sign-in page if token is not found
                     CoreRouter.rootInstance.go({ path: "signin" });
                     return;

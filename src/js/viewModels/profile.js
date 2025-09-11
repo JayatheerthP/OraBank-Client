@@ -36,7 +36,6 @@ define([
             self.loadUserProfile = async function () {
                 var userId = sessionStorage.getItem('userId');
                 if (!userId) {
-                    self.showMessage('User ID not found. Please log in again.', 'error');
                     // Optionally navigate to sign-in page if user ID is not found
                     CoreRouter.rootInstance.go({ path: "signin" });
                     return;

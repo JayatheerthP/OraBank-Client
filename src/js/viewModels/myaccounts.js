@@ -39,7 +39,6 @@ define([
             self.loadUserAccounts = async function () {
                 var authToken = sessionStorage.getItem('authToken');
                 if (!authToken) {
-                    self.showMessage('Authentication token not found. Please log in again.', 'error');
                     // Navigate to sign-in page if token is not found
                     CoreRouter.rootInstance.go({ path: "signin" });
                     return;
@@ -73,7 +72,6 @@ define([
             };
             // Function to view account statement (navigation using CoreRouter)
             self.viewStatement = function (accountNumber) {
-                console.log("Viewing statement for account: " + accountNumber);
                 // Navigate to statement view with account number as a parameter
                 CoreRouter.rootInstance.go({ path: "statement", params: { accountNumber: accountNumber } });
             };

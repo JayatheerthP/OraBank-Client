@@ -18,7 +18,6 @@ define([
       };
       // Utility to show messages (temporary placeholder for UI feedback)
       self.showMessage = function (msg, type) {
-        console.log(type + ": " + msg);
         alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
       };
       // Utility to get auth headers
@@ -80,7 +79,6 @@ define([
       self.loadUserAccounts = async function () {
         var authToken = sessionStorage.getItem('authToken');
         if (!authToken) {
-          self.showMessage('Authentication token not found. Please log in again.', 'error');
           // Navigate to sign-in page if token is not found
           CoreRouter.rootInstance.go({ path: "signin" });
           return;
@@ -115,11 +113,10 @@ define([
       };
       // Quick action navigation functions using CoreRouter
       self.showTransferView = function () {
-        console.log("Navigating to Transfer Money view...");
         CoreRouter.rootInstance.go({ path: "transfer" });
       };
       self.showStatementView = function () {
-        console.log("Navigating to Statements view...");
+
         CoreRouter.rootInstance.go({ path: "statement" });
       };
       self.showCreateAccountView = function () {

@@ -153,7 +153,6 @@ define([
                 var isPasswordValid = self.validatePassword(fields.password);
                 var isAddressValid = self.validateAddress(fields.address);
                 if (!(isFullNameValid && isEmailValid && isPhoneNumberValid && isPasswordValid && isAddressValid)) {
-                    self.showMessage('Please correct the errors before signing up.', 'error');
                     return;
                 }
                 try {

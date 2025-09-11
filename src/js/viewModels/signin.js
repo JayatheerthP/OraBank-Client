@@ -77,7 +77,6 @@ define([
                 var isEmailValid = self.validateEmail(email);
                 var isPasswordValid = self.validatePassword(password);
                 if (!isEmailValid || !isPasswordValid) {
-                    self.showMessage('Please correct the errors before signing in.', 'error');
                     return;
                 }
                 try {
@@ -100,7 +99,6 @@ define([
                     var userId = data.userId;
                     sessionStorage.setItem('authToken', authToken);
                     sessionStorage.setItem('userId', userId);
-                    self.showMessage('Welcome back!', 'success');
                     // Navigate to dashboard using CoreRouter
                     CoreRouter.rootInstance.go({ path: "dashboard" });
                 } catch (error) {

@@ -23,7 +23,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       self.isNavbarVisible = ko.observable(true);
 
       let navData = [
-        { path: '', redirect: 'dashboard' },
+        { path: '', redirect: 'signin' },
         { path: 'dashboard', detail: { label: 'Dashboard', iconClass: 'oj-ux-ico-information-s' } },
         { path: 'signin', detail: { label: 'Sign In', iconClass: 'oj-ux-ico-information-s' } },
         { path: 'signup', detail: { label: 'Sign Up', iconClass: 'oj-ux-ico-information-s' } },
@@ -48,18 +48,15 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
       // Listen to route changes to toggle navbar visibility
       self.selection.path.subscribe(function (currentPath) {
-        console.log("Route changed to:", currentPath);
         // Hide navbar on signin and signup pages
         var visible = currentPath !== "signin" && currentPath !== "signup";
         self.isNavbarVisible(visible);
-        console.log("Navbar visibility set to:", visible);
       });
 
       // Initial check for navbar visibility based on current route
       var initialPath = self.selection.path() || "dashboard";
       var initialVisible = initialPath !== "signin" && initialPath !== "signup";
       self.isNavbarVisible(initialVisible);
-      console.log("Initial route:", initialPath, "Navbar visibility:", initialVisible);
 
       // Drawer
       self.sideDrawerOn = ko.observable(false);

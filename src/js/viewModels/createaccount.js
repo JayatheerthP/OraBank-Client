@@ -121,7 +121,6 @@ define([
             self.createAccount = async function () {
                 var authToken = sessionStorage.getItem('authToken');
                 if (!authToken) {
-                    self.showMessage('Authentication token not found. Please log in again.', 'error');
                     // Navigate to sign-in page if token is not found
                     CoreRouter.rootInstance.go({ path: "signin" });
                     return;
@@ -136,7 +135,6 @@ define([
                 var isBranchValid = self.validateBranch(branch);
                 var isInitialDepositValid = self.validateInitialDeposit(initialDeposit);
                 if (!(isAccountTypeValid && isCurrencyValid && isBranchValid && isInitialDepositValid)) {
-                    self.showMessage('Please correct the errors before creating an account.', 'error');
                     return;
                 }
                 try {
