@@ -1,13 +1,9 @@
 <div id="dashboard" class="flex flex-col gap-8 p-8">
   <div class="flex flex-col gap-3 flex-wrap">
     <span class="text-2xl font-bold text-gray-800">Your Accounts</span>
-    <!-- Account Cards Section -->
     <div id="accountCards" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
     </div>
   </div>
-
-  <!-- Quick Actions Section -->
   <div class="flex flex-col flex-wrap gap-2">
     <span class="font-bold text-2xl">Quick Actions</span>
     <oj-c-form-layout id="quickActions" max-columns="3" direction="row">
@@ -20,9 +16,8 @@
     </oj-c-form-layout>
   </div>
   <oj-if test="[[isLoading]]">
-        <div
-            class="fixed inset-0 bg-gradient-to-br from-red-50 to-orange-50 bg-opacity-75 flex items-center justify-center z-50">
-            <oj-c-progress-circle size="md" value="-1"></oj-c-progress-circle>
-        </div>
-    </oj-if>
+    <div class="fixed inset-0 bg-gradient-to-br from-red-50 to-orange-50 bg-opacity-75 flex items-center justify-center z-50">
+      <oj-c-progress-circle size="md" value="-1"></oj-c-progress-circle>
+    </div>
+  </oj-if>
 </div>

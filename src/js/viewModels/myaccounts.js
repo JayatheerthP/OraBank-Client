@@ -1,3 +1,11 @@
+/*
+    Document   : MyAccountsViewModel
+    Created on : Sep 9, 2025
+    Author     : Jayatheerth P Z
+    Description:
+        Manages the display of user accounts and provides functionality to download account statements.
+*/
+
 define([
     "knockout",
     "oj-c/button",
@@ -7,6 +15,10 @@ define([
     "jspdf"
 ],
     function (ko, Button, ojtable, ArrayDataProvider, CoreRouter, jspdf) {
+        /**
+         * ViewModel for the My Accounts page.
+         * Manages the display of user accounts and provides functionality to download account statements.
+         */
         function MyAccountsViewModel() {
             var self = this;
             // Observables for account data
@@ -18,7 +30,6 @@ define([
                 ACCOUNT: 'http://localhost:8085/accountservice/api/v1',
                 TRANSACTION: 'http://localhost:8085/transactionservice/api/v1'
             };
-
             // Table columns definition
             self.columns = [
                 { headerText: 'Account Number', field: 'accountNumber' },
@@ -28,25 +39,35 @@ define([
                 { headerText: 'Actions', field: 'actions' }
             ];
 
-            // Utility to show loading state
+            /**
+             * Controls the visibility of the loading overlay.
+             * @param {boolean} show - True to show the loading overlay, false to hide it.
+             */
             self.showLoading = function (show) {
                 self.isLoading(show);
-                console.log(show ? "Loading..." : "Loading complete");
             };
 
-            // Utility to show messages (temporary placeholder for UI feedback)
+            /**
+             * Displays a message to the user via an alert.
+             * @param {string} msg - The message to display.
+             * @param {string} type - The type of message ('success' or 'error').
+             */
             self.showMessage = function (msg, type) {
-                console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
 
-            // Utility to get auth headers
+            /**
+             * Retrieves authentication headers for API requests.
+             * @returns {Object} Headers object with Authorization token if available.
+             */
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
 
-            // Fetch user accounts from API
+            /**
+             * Fetches user accounts from the API and updates the table data provider.
+             */
             self.loadUserAccounts = async function () {
                 var authToken = sessionStorage.getItem('authToken');
                 if (!authToken) {
@@ -72,13 +93,15 @@ define([
                     self.accountsDataProvider(new ArrayDataProvider(self.accounts(), { keyAttributes: 'accountNumber' }));
                 } catch (error) {
                     self.showMessage(error.message || 'Error loading accounts. Please try again.', 'error');
-                    console.error(error);
                 } finally {
                     self.showLoading(false);
                 }
             };
 
-            // Function to download account statement as PDF with improved table styling
+            /**
+             * Downloads an account statement as a PDF for the specified account number.
+             * @param {string} accountNumber - The account number for which to download the statement.
+             */
             self.downloadAccountStatement = async function (accountNumber) {
                 try {
                     self.showLoading(true);
@@ -96,8 +119,6 @@ define([
                     }
                     const data = await response.json();
                     const transactions = data.transactions || [];
-
-                    // Generate PDF using jsPDF
                     const { jsPDF } = jspdf;
                     const doc = new jsPDF();
                     doc.setFontSize(18);
@@ -105,7 +126,6 @@ define([
                     doc.setFontSize(12);
                     doc.text(`Account Number: ${accountNumber}`, 14, 30);
                     doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 36);
-
                     let yPosition = 50;
                     if (transactions.length === 0) {
                         doc.text('No transactions found for this account.', 14, yPosition);
@@ -124,27 +144,25 @@ define([
                             doc.text(`Amount: Rs.${tx.amount ? tx.amount : '0.00'}`, 14, yPosition);
                             yPosition += 6;
                             doc.text(`Status: ${tx.status || 'N/A'}`, 14, yPosition);
-                            yPosition += 10; // Extra spacing between transactions
-
-                            if (yPosition > 260) { // Add new page if content exceeds page height
+                            yPosition += 10;
+                            if (yPosition > 260) {
                                 doc.addPage();
                                 yPosition = 20;
                             }
                         });
                     }
-
-                    // Save the PDF
                     doc.save(`Account_Statement_${accountNumber}.pdf`);
                     self.showMessage('Statement downloaded successfully!', 'success');
                 } catch (error) {
                     self.showMessage(error.message || 'Error downloading statement. Please try again.', 'error');
-                    console.error(error);
                 } finally {
                     self.showLoading(false);
                 }
             };
 
-            // Initialize the component (load data on load)
+            /**
+             * Initializes the component by loading account data.
+             */
             self.initialize = function () {
                 self.loadUserAccounts();
             };

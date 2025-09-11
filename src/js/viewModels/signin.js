@@ -1,3 +1,11 @@
+/*
+    Document   : SignInViewModel
+    Created on : Sep 9, 2025
+    Author     : Jayatheerth P Z
+    Description:
+        Handles user authentication, form validation, and navigation for the Sign In page.
+*/
+
 define([
     "knockout",
     "ojs/ojcorerouter",
@@ -8,6 +16,10 @@ define([
     "oj-c/progress-circle"
 ],
     function (ko, CoreRouter) {
+        /**
+         * ViewModel for the Sign In page.
+         * Handles user authentication, form validation, and navigation.
+         */
         function SignInViewModel() {
             var self = this;
             self.email = ko.observable("");
@@ -19,20 +31,30 @@ define([
                 USER: 'http://localhost:8085/userservice/api/v1'
             };
 
-            // Updated showLoading function to control the loading overlay
+            /**
+             * Controls the visibility of the loading overlay.
+             * @param {boolean} show - True to show the loading overlay, false to hide it.
+             */
             self.showLoading = function (show) {
                 self.isLoading(show);
-                console.log(show ? "Loading..." : "Loading complete");
             };
 
+            /**
+             * Displays a message to the user via an alert.
+             * @param {string} msg - The message to display.
+             * @param {string} type - The type of message ('success' or 'error').
+             */
             self.showMessage = function (msg, type) {
-                console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
 
-            // Email Validator Function
+            /**
+             * Validates the email input.
+             * @param {string} email - The email address to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateEmail = function (email) {
-                self.emailError([]); // Clear previous errors
+                self.emailError([]);
                 if (!email) {
                     self.emailError.push({ summary: "Email Required", detail: "Please enter your email address." });
                     return false;
@@ -45,9 +67,13 @@ define([
                 return true;
             };
 
-            // Password Validator Function
+            /**
+             * Validates the password input.
+             * @param {string} password - The password to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validatePassword = function (password) {
-                self.passwordError([]); // Clear previous errors
+                self.passwordError([]);
                 if (!password) {
                     self.passwordError.push({ summary: "Password Required", detail: "Please enter your password." });
                     return false;
@@ -59,6 +85,7 @@ define([
                 return true;
             };
 
+            // Subscribe to input changes for real-time validation
             self.email.subscribe(function (newValue) {
                 self.validateEmail(newValue);
             });
@@ -66,13 +93,24 @@ define([
                 self.validatePassword(newValue);
             });
 
+            /**
+             * Validates email on blur event.
+             */
             self.onEmailBlur = function () {
                 self.validateEmail(self.email());
             };
+
+            /**
+             * Validates password on blur event.
+             */
             self.onPasswordBlur = function () {
                 self.validatePassword(self.password());
             };
 
+            /**
+             * Handles the sign-in process by validating inputs and making an API call.
+             * Redirects to dashboard on success, shows error message on failure.
+             */
             self.signIn = async function () {
                 var email = self.email();
                 var password = self.password();
@@ -82,7 +120,7 @@ define([
                     return;
                 }
                 try {
-                    self.showLoading(true); // Show loader
+                    self.showLoading(true);
                     const response = await fetch(`${self.API_BASE.USER}/users/signin`, {
                         method: 'POST',
                         headers: {
@@ -104,10 +142,13 @@ define([
                 } catch (error) {
                     self.showMessage(error.message || 'Invalid email or password', 'error');
                 } finally {
-                    self.showLoading(false); // Hide loader
+                    self.showLoading(false);
                 }
             };
 
+            /**
+             * Navigates to the Sign Up page.
+             */
             self.showSignUp = function () {
                 CoreRouter.rootInstance.go({ path: "signup" });
             };

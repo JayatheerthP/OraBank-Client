@@ -1,3 +1,11 @@
+/*
+    Document   : ProfileViewModel
+    Created on : Sep 9, 2025
+    Author     : Jayatheerth P Z
+    Description:
+        Manages the display of user profile information retrieved from an API.
+*/
+
 define([
     "knockout",
     "ojs/ojcorerouter",
@@ -8,6 +16,10 @@ define([
     "oj-c/progress-circle"
 ],
     function (ko, CoreRouter) {
+        /**
+         * ViewModel for the Profile page.
+         * Manages the display of user profile information retrieved from an API.
+         */
         function ProfileViewModel() {
             var self = this;
             // Observables for profile data
@@ -22,29 +34,38 @@ define([
                 USER: 'http://localhost:8085/userservice/api/v1'
             };
 
-            // Utility to show loading state
+            /**
+             * Controls the visibility of the loading overlay.
+             * @param {boolean} show - True to show the loading overlay, false to hide it.
+             */
             self.showLoading = function (show) {
                 self.isLoading(show);
-                console.log(show ? "Loading..." : "Loading complete");
             };
 
-            // Utility to show messages (temporary placeholder for UI feedback)
+            /**
+             * Displays a message to the user via an alert.
+             * @param {string} msg - The message to display.
+             * @param {string} type - The type of message ('success' or 'error').
+             */
             self.showMessage = function (msg, type) {
-                console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
 
-            // Utility to get auth headers
+            /**
+             * Retrieves authentication headers for API requests.
+             * @returns {Object} Headers object with Authorization token if available.
+             */
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
 
-            // Fetch user profile data from API
+            /**
+             * Fetches user profile data from the API and updates observables.
+             */
             self.loadUserProfile = async function () {
                 var userId = sessionStorage.getItem('userId');
                 if (!userId) {
-                    // Optionally navigate to sign-in page if user ID is not found
                     CoreRouter.rootInstance.go({ path: "signin" });
                     return;
                 }
@@ -63,7 +84,6 @@ define([
                         throw new Error(errorMessage);
                     }
                     const data = await response.json();
-                    // Update observables with profile data
                     self.fullName(data.fullName || "");
                     self.email(data.email || "");
                     self.phoneNumber(data.phoneNumber || "");
@@ -71,13 +91,14 @@ define([
                     self.address(data.address || "");
                 } catch (error) {
                     self.showMessage(error.message || 'Error loading profile. Please try again.', 'error');
-                    console.error(error);
                 } finally {
                     self.showLoading(false);
                 }
             };
 
-            // Initialize the component (load profile data on load)
+            /**
+             * Initializes the component by loading profile data.
+             */
             self.initialize = function () {
                 self.loadUserProfile();
             };
@@ -85,7 +106,9 @@ define([
             // Call initialize when the component is loaded
             self.initialize();
 
-            // Optional: Function to navigate back to dashboard or sign-in if needed
+            /**
+             * Navigates to the Sign In page.
+             */
             self.goToSignIn = function () {
                 CoreRouter.rootInstance.go({ path: "signin" });
             };

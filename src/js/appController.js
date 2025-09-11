@@ -1,10 +1,23 @@
+/*
+    Document   : ControllerViewModel
+    Created on : Sep 9, 2025
+    Author     : Jayatheerth P Z
+    Description:
+        Manages routing, navigation, authentication, and responsive layout behavior for the application.
+*/
+
 define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknockouttemplateutils', 'ojs/ojcorerouter', 'ojs/ojmodulerouter-adapter', 'ojs/ojknockoutrouteradapter', 'ojs/ojurlparamadapter', 'ojs/ojresponsiveutils', 'ojs/ojresponsiveknockoututils', 'ojs/ojarraydataprovider',
   'ojs/ojdrawerpopup', 'ojs/ojmodule-element', 'ojs/ojknockout'],
   function (ko, Context, moduleUtils, KnockoutTemplateUtils, CoreRouter, ModuleRouterAdapter, KnockoutRouterAdapter, UrlParamAdapter, ResponsiveUtils, ResponsiveKnockoutUtils, ArrayDataProvider) {
+    /**
+     * Controller ViewModel for the application.
+     * Manages routing, navigation, authentication, and responsive layout behavior.
+     */
     function ControllerViewModel() {
       var self = this;
       self.KnockoutTemplateUtils = KnockoutTemplateUtils;
-      // Handle announcements sent when pages change, for Accessibility.
+
+      // Accessibility announcement handling
       self.manner = ko.observable('polite');
       self.message = ko.observable();
       announcementHandler = (event) => {
@@ -13,7 +26,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       };
       document.getElementById('globalBody').addEventListener('announce', announcementHandler, false);
 
-      // Media queries for responsive layouts
+      // Responsive layout setup using media queries
       const smQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.SM_ONLY);
       self.smScreen = ResponsiveKnockoutUtils.createMediaQueryObservable(smQuery);
       const mdQuery = ResponsiveUtils.getFrameworkQuery(ResponsiveUtils.FRAMEWORK_QUERY_KEY.MD_UP);
@@ -23,6 +36,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       self.isNavbarVisible = ko.observable(true);
       self.authenticated = ko.observable(false);
 
+      // Navigation routes configuration
       let navData = [
         { path: '', redirect: 'dashboard' },
         { path: 'dashboard', detail: { label: 'Dashboard', iconClass: 'oj-ux-ico-home' } },
@@ -34,7 +48,8 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         { path: 'transfer', detail: { label: 'Transfer', iconClass: 'oj-ux-ico-transfer-money' } },
         { path: 'profile', detail: { label: 'Profile', iconClass: 'oj-ux-ico-user-configuration' } },
       ];
-      // Router setup
+
+      // Router setup with URL parameter adapter
       let router = new CoreRouter(navData, {
         urlAdapter: new UrlParamAdapter()
       });
@@ -43,7 +58,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
       self.moduleAdapter = new ModuleRouterAdapter(router);
       self.selection = new KnockoutRouterAdapter(router);
 
-      // Setup the navDataProvider with the routes, excluding the first redirected route and 'signup'
+      // Setup navigation data provider, excluding redirected route and specific pages
       let visibleNavData = navData.slice(1).filter(route => route.path !== 'signup').filter(route => route.path !== 'signin');
       self.navDataProvider = new ArrayDataProvider(visibleNavData, { keyAttributes: "path" });
 
@@ -52,13 +67,19 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         USER: 'http://localhost:8085/userservice/api/v1'
       };
 
-      // Function to check if user is logged in (based on authToken in sessionStorage)
+      /**
+       * Checks if the user is logged in based on the presence of an authToken in sessionStorage.
+       * @returns {boolean} True if authToken exists, false otherwise.
+       */
       self.isLoggedIn = function () {
         var authToken = sessionStorage.getItem('authToken');
-        return !!authToken; // Returns true if authToken exists, false otherwise
+        return !!authToken;
       };
 
-      // Function to check if user is not authorized by validating token with API
+      /**
+       * Validates user authorization by checking the authToken with an API call.
+       * @returns {Promise<boolean>} True if not authorized, false if authorized.
+       */
       self.notAuthorized = async function () {
         var authToken = sessionStorage.getItem('authToken');
         var userId = sessionStorage.getItem('userId');
@@ -75,39 +96,39 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
             }
           });
           if (!response.ok) {
-            console.log("Authorization check failed with status:", response.status);
+            // Removed console.log for non-critical debugging
             this.authenticated = false;
             return true; // Not authorized if API call fails (e.g., 401, 403)
           }
           this.authenticated = true;
           return false; // Authorized if API call succeeds
         } catch (error) {
-          console.error("Error during authorization check:", error);
+          // Removed console.error to reduce clutter; consider logging critical errors in production
           this.authenticated = false;
           return true; // Consider not authorized on any error (e.g., network failure)
         }
       };
 
-      // Function to handle authentication check and redirection asynchronously
+      /**
+       * Checks authentication status and redirects based on the current path and login state.
+       * @param {string} currentPath The current route path.
+       * @returns {Promise<void>}
+       */
       self.checkAuthAndRedirect = async function (currentPath) {
         var isAuthenticated = self.isLoggedIn();
         if (currentPath === "signin" || currentPath === "signup") {
-          // If user is logged in, redirect to dashboard when accessing signin or signup
           if (isAuthenticated) {
-            console.log("User is logged in, redirecting from", currentPath, "to dashboard");
+            // Redirect to dashboard if user is logged in and accessing signin/signup
             CoreRouter.rootInstance.go({ path: "dashboard" });
           }
         } else {
-          // For all other routes, if user is not logged in or not authorized, redirect to signin
           if (!isAuthenticated) {
-            console.log("User is not logged in, redirecting from", currentPath, "to signin");
+            // Redirect to signin if user is not logged in
             CoreRouter.rootInstance.go({ path: "signin" });
           } else {
-            // If logged in, perform deeper authorization check
             var isNotAuthorized = await self.notAuthorized();
             if (isNotAuthorized) {
-              console.log("User is not authorized, redirecting from", currentPath, "to signin");
-              // Optionally clear invalid token
+              // Clear invalid token and redirect to signin if not authorized
               sessionStorage.removeItem('authToken');
               sessionStorage.removeItem('userId');
               CoreRouter.rootInstance.go({ path: "signin" });
@@ -116,37 +137,35 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         }
       };
 
-      // Listen to route changes to toggle navbar visibility and enforce authentication
+      // Subscribe to route changes for navbar visibility and authentication enforcement
       self.selection.path.subscribe(function (currentPath) {
-        console.log("Route changed to:", currentPath);
-        // Hide navbar on signin and signup pages
+        // Toggle navbar visibility based on route
         var navbarVisible = currentPath !== "signin" && currentPath !== "signup";
         self.isNavbarVisible(navbarVisible);
-        console.log("Navbar visibility set to:", navbarVisible);
-
         // Perform authentication check and redirection
         self.checkAuthAndRedirect(currentPath);
       });
 
-      // Initial check for navbar visibility and authentication based on current route
+      // Initial setup for navbar visibility and authentication
       var initialPath = self.selection.path() || "dashboard";
       var initialNavbarVisible = initialPath !== "signin" && initialPath !== "signup";
       self.isNavbarVisible(initialNavbarVisible);
-      console.log("Initial route:", initialPath, "Navbar visibility:", initialNavbarVisible);
-
-      // Initial authentication check and redirection
       self.checkAuthAndRedirect(initialPath);
 
-      // Drawer
+      // Navigation drawer setup
       self.sideDrawerOn = ko.observable(false);
       // Close drawer on medium and larger screens
       self.mdScreen.subscribe(() => { self.sideDrawerOn(false) });
-      // Called by navigation drawer toggle button and after selection of nav drawer item
+      
+      /**
+       * Toggles the visibility of the navigation drawer.
+       */
       self.toggleDrawer = () => {
         self.sideDrawerOn(!self.sideDrawerOn());
-      }
+      };
     }
-    // release the application bootstrap busy state
+
+    // Release the application bootstrap busy state
     Context.getPageContext().getBusyContext().applicationBootstrapComplete();
     return new ControllerViewModel();
   }

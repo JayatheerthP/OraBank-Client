@@ -1,3 +1,11 @@
+/*
+    Document   : DashboardViewModel
+    Created on : Sep 9, 2025
+    Author     : Jayatheerth P Z
+    Description:
+        Manages the display of user accounts and quick navigation actions on the Dashboard page.
+*/
+
 define([
   "knockout",
   "ojs/ojcorerouter",
@@ -6,6 +14,10 @@ define([
   "oj-c/progress-circle"
 ],
   function (ko, CoreRouter) {
+    /**
+     * ViewModel for the Dashboard page.
+     * Manages the display of user accounts and quick navigation actions.
+     */
     function DashboardViewModel() {
       var self = this;
       // Observables for account data
@@ -16,31 +28,42 @@ define([
         ACCOUNT: 'http://localhost:8085/accountservice/api/v1'
       };
 
-      // Utility to show loading state
+      /**
+       * Controls the visibility of the loading overlay.
+       * @param {boolean} show - True to show the loading overlay, false to hide it.
+       */
       self.showLoading = function (show) {
         self.isLoading(show);
-        console.log(show ? "Loading..." : "Loading complete");
       };
 
-      // Utility to show messages (temporary placeholder for UI feedback)
+      /**
+       * Displays a message to the user via an alert.
+       * @param {string} msg - The message to display.
+       * @param {string} type - The type of message ('success' or 'error').
+       */
       self.showMessage = function (msg, type) {
         alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
       };
 
-      // Utility to get auth headers
+      /**
+       * Retrieves authentication headers for API requests.
+       * @returns {Object} Headers object with Authorization token if available.
+       */
       self.getAuthHeaders = function () {
         var authToken = sessionStorage.getItem('authToken');
         return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
       };
 
-      // Function to render account cards manually
+      /**
+       * Renders account cards dynamically in the DOM.
+       * @param {Array} accounts - Array of account objects to render.
+       */
       self.renderAccountCards = function (accounts) {
         var container = document.getElementById('accountCards');
         if (!container) {
-          console.error("Account cards container not found.");
           return;
         }
-        container.innerHTML = ''; // Clear existing content
+        container.innerHTML = '';
         if (accounts.length === 0) {
           var noAccountsDiv = document.createElement('div');
           noAccountsDiv.innerHTML = '<p>No accounts found. Please create an account.</p>';
@@ -49,7 +72,7 @@ define([
         }
         accounts.forEach(function (account) {
           var cardDiv = document.createElement('div');
-          cardDiv.className = 'account-card'; // Optional: Add a class for styling
+          cardDiv.className = 'account-card';
           cardDiv.innerHTML = `
           <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-600 hover:shadow-xl transition-shadow">
             <div class="flex justify-between items-start mb-4">
@@ -81,11 +104,12 @@ define([
         });
       };
 
-      // Fetch user accounts from API
+      /**
+       * Fetches user accounts from the API and updates the UI.
+       */
       self.loadUserAccounts = async function () {
         var authToken = sessionStorage.getItem('authToken');
         if (!authToken) {
-          // Navigate to sign-in page if token is not found
           CoreRouter.rootInstance.go({ path: "signin" });
           return;
         }
@@ -109,25 +133,35 @@ define([
           self.renderAccountCards(fetchedAccounts);
         } catch (error) {
           self.showMessage(error.message || 'Error loading accounts. Please try again.', 'error');
-          console.error(error);
         } finally {
           self.showLoading(false);
         }
       };
 
-      // Quick action navigation functions using CoreRouter
+      /**
+       * Navigates to the Transfer page.
+       */
       self.showTransferView = function () {
         CoreRouter.rootInstance.go({ path: "transfer" });
       };
+
+      /**
+       * Navigates to the Statements page.
+       */
       self.showStatementView = function () {
         CoreRouter.rootInstance.go({ path: "statements" });
       };
+
+      /**
+       * Navigates to the Create Account page.
+       */
       self.showCreateAccountView = function () {
-        console.log("Navigating to Create Account view...");
         CoreRouter.rootInstance.go({ path: "createaccount" });
       };
 
-      // Initialize the component (load data on load)
+      /**
+       * Initializes the component by loading account data.
+       */
       self.initialize = function () {
         self.loadUserAccounts();
       };

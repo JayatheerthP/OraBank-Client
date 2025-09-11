@@ -1,3 +1,11 @@
+/*
+    Document   : StatementsViewModel
+    Created on : Sep 9, 2025
+    Author     : Jayatheerth P Z
+    Description:
+        Manages the display of account statements based on selected user accounts.
+*/
+
 define([
     "knockout",
     "ojs/ojarraydataprovider",
@@ -7,6 +15,10 @@ define([
     "oj-c/progress-circle"
 ],
     function (ko, ArrayDataProvider, CoreRouter) {
+        /**
+         * ViewModel for the Statements page.
+         * Manages the display of account statements based on selected user accounts.
+         */
         function StatementsViewModel() {
             var self = this;
             // Observables for data
@@ -22,7 +34,6 @@ define([
                 ACCOUNT: 'http://localhost:8085/accountservice/api/v1',
                 TRANSACTION: 'http://localhost:8085/transactionservice/api/v1'
             };
-
             // Table columns definition for statements
             self.columns = [
                 { headerText: 'Date', field: 'date' },
@@ -33,29 +44,38 @@ define([
                 { headerText: 'Status', field: 'status' }
             ];
 
-            // Utility to show loading state
+            /**
+             * Controls the visibility of the loading overlay.
+             * @param {boolean} show - True to show the loading overlay, false to hide it.
+             */
             self.showLoading = function (show) {
                 self.isLoading(show);
-                console.log(show ? "Loading..." : "Loading complete");
             };
 
-            // Utility to show messages (temporary placeholder for UI feedback)
+            /**
+             * Displays a message to the user via an alert.
+             * @param {string} msg - The message to display.
+             * @param {string} type - The type of message ('success' or 'error').
+             */
             self.showMessage = function (msg, type) {
-                console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
 
-            // Utility to get auth headers
+            /**
+             * Retrieves authentication headers for API requests.
+             * @returns {Object} Headers object with Authorization token if available.
+             */
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
 
-            // Fetch user accounts from API for dropdown
+            /**
+             * Fetches user accounts from the API for the dropdown selection.
+             */
             self.loadUserAccounts = async function () {
                 var authToken = sessionStorage.getItem('authToken');
                 if (!authToken) {
-                    // Navigate to sign-in page if token is not found
                     CoreRouter.rootInstance.go({ path: "signin" });
                     return;
                 }
@@ -82,13 +102,15 @@ define([
                     self.accountsDataProvider(new ArrayDataProvider(self.accounts(), { keyAttributes: 'value' }));
                 } catch (error) {
                     self.showMessage(error.message || 'Error loading accounts. Please try again.', 'error');
-                    console.error(error);
                 } finally {
                     self.showLoading(false);
                 }
             };
 
-            // Fetch statements for the selected account
+            /**
+             * Fetches transaction statements for the selected account from the API.
+             * @param {string} accountNumber - The account number for which to load statements.
+             */
             self.loadStatements = async function (accountNumber) {
                 if (!accountNumber) {
                     self.statementsVisible(false);
@@ -115,21 +137,25 @@ define([
                     self.statementsVisible(true);
                 } catch (error) {
                     self.showMessage(error.message || 'Error loading statements. Please try again.', 'error');
-                    console.error(error);
                     self.statementsVisible(false);
                 } finally {
                     self.showLoading(false);
                 }
             };
 
-            // Event handler for account selection change
+            /**
+             * Handles the account selection change event and loads statements for the selected account.
+             * @param {Object} event - The event object containing the selected value.
+             */
             self.onAccountSelected = function (event) {
                 var selectedValue = event.detail.value;
                 self.selectedAccount(selectedValue);
                 self.loadStatements(selectedValue);
             };
 
-            // Initialize the component (load accounts on load)
+            /**
+             * Initializes the component by loading account data.
+             */
             self.initialize = function () {
                 self.loadUserAccounts();
             };

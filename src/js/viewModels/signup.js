@@ -1,3 +1,11 @@
+/*
+    Document   : SignUpViewModel
+    Created on : Sep 9, 2025
+    Author     : Jayatheerth P Z
+    Description:
+        Manages user registration, form validation, and navigation for the Sign Up page.
+*/
+
 define([
     "knockout",
     "ojs/ojcorerouter",
@@ -9,6 +17,10 @@ define([
     "oj-c/input-date-picker",
 ],
     function (ko, CoreRouter) {
+        /**
+         * ViewModel for the Sign Up page.
+         * Manages user registration, form validation, and navigation.
+         */
         function SignUpViewModel() {
             var self = this;
             // Observables for form fields
@@ -30,19 +42,28 @@ define([
                 USER: 'http://localhost:8085/userservice/api/v1'
             };
 
-            // Utility to show loading state
+            /**
+             * Controls the visibility of the loading overlay.
+             * @param {boolean} show - True to show the loading overlay, false to hide it.
+             */
             self.showLoading = function (show) {
                 self.isLoading(show);
-                console.log(show ? "Loading..." : "Loading complete");
             };
 
-            // Utility to show general messages (temporary placeholder)
+            /**
+             * Displays a message to the user via an alert.
+             * @param {string} msg - The message to display.
+             * @param {string} type - The type of message ('success' or 'error').
+             */
             self.showMessage = function (msg, type) {
-                console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
 
-            // Validation Functions with Trimming for Mandatory Fields
+            /**
+             * Validates the full name input.
+             * @param {string} fullName - The full name to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateFullName = function (fullName) {
                 self.fullNameError([]);
                 var trimmedFullName = fullName ? fullName.trim() : "";
@@ -57,6 +78,11 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the email input.
+             * @param {string} email - The email address to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateEmail = function (email) {
                 self.emailError([]);
                 var trimmedEmail = email ? email.trim() : "";
@@ -72,6 +98,11 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the phone number input.
+             * @param {string} phoneNumber - The phone number to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validatePhoneNumber = function (phoneNumber) {
                 self.phoneNumberError([]);
                 var trimmedPhoneNumber = phoneNumber ? phoneNumber.trim() : "";
@@ -87,6 +118,11 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the password input.
+             * @param {string} password - The password to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validatePassword = function (password) {
                 self.passwordError([]);
                 var trimmedPassword = password ? password.trim() : "";
@@ -101,6 +137,11 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the address input.
+             * @param {string} address - The address to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateAddress = function (address) {
                 self.addressError([]);
                 var trimmedAddress = address ? address.trim() : "";
@@ -115,7 +156,7 @@ define([
                 return true;
             };
 
-            // Real-time validation as user types
+            // Subscribe to input changes for real-time validation
             self.fullName.subscribe(function (newValue) {
                 self.validateFullName(newValue);
             });
@@ -132,24 +173,45 @@ define([
                 self.validateAddress(newValue);
             });
 
-            // Validation on blur (optional, as real-time is covered by subscribe)
+            /**
+             * Validates full name on blur event.
+             */
             self.onFullNameBlur = function () {
                 self.validateFullName(self.fullName());
             };
+
+            /**
+             * Validates email on blur event.
+             */
             self.onEmailBlur = function () {
                 self.validateEmail(self.email());
             };
+
+            /**
+             * Validates phone number on blur event.
+             */
             self.onPhoneNumberBlur = function () {
                 self.validatePhoneNumber(self.phoneNumber());
             };
+
+            /**
+             * Validates password on blur event.
+             */
             self.onPasswordBlur = function () {
                 self.validatePassword(self.password());
             };
+
+            /**
+             * Validates address on blur event.
+             */
             self.onAddressBlur = function () {
                 self.validateAddress(self.address());
             };
 
-            // Sign Up function with validation
+            /**
+             * Handles the sign-up process by validating inputs and making an API call.
+             * Redirects to sign-in page on success, shows error message on failure.
+             */
             self.signUp = async function () {
                 var fields = {
                     fullName: self.fullName() ? self.fullName().trim() : "",
@@ -159,7 +221,6 @@ define([
                     password: self.password() ? self.password().trim() : "",
                     address: self.address() ? self.address().trim() : ""
                 };
-                // Validate all fields before submission (except dateOfBirth)
                 var isFullNameValid = self.validateFullName(fields.fullName);
                 var isEmailValid = self.validateEmail(fields.email);
                 var isPhoneNumberValid = self.validatePhoneNumber(fields.phoneNumber);
@@ -192,7 +253,9 @@ define([
                 }
             };
 
-            // Navigation to Sign In page
+            /**
+             * Navigates to the Sign In page.
+             */
             self.showSignIn = function () {
                 CoreRouter.rootInstance.go({ path: "signin" });
             };

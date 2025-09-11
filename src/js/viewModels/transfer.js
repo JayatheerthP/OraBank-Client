@@ -1,3 +1,11 @@
+/*
+    Document   : TransferViewModel
+    Created on : Sep 9, 2025
+    Author     : Jayatheerth P Z
+    Description:
+        Manages the process of transferring money between accounts with form validation and API interaction.
+*/
+
 define([
     "knockout",
     "ojs/ojarraydataprovider",
@@ -10,6 +18,10 @@ define([
     "oj-c/form-layout",
 ],
     function (ko, ArrayDataProvider, CoreRouter) {
+        /**
+         * ViewModel for the Transfer page.
+         * Manages the process of transferring money between accounts with form validation and API interaction.
+         */
         function TransferViewModel() {
             var self = this;
             // Observables for form fields
@@ -34,29 +46,38 @@ define([
                 TRANSACTION: 'http://localhost:8085/transactionservice/api/v1'
             };
 
-            // Utility to show loading state
+            /**
+             * Controls the visibility of the loading overlay.
+             * @param {boolean} show - True to show the loading overlay, false to hide it.
+             */
             self.showLoading = function (show) {
                 self.isLoading(show);
-                console.log(show ? "Loading..." : "Loading complete");
             };
 
-            // Utility to show messages (temporary placeholder for UI feedback)
+            /**
+             * Displays a message to the user via an alert.
+             * @param {string} msg - The message to display.
+             * @param {string} type - The type of message ('success' or 'error').
+             */
             self.showMessage = function (msg, type) {
-                console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
 
-            // Utility to get auth headers
+            /**
+             * Retrieves authentication headers for API requests.
+             * @returns {Object} Headers object with Authorization token if available.
+             */
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
 
-            // Fetch user accounts for dropdown
+            /**
+             * Fetches user accounts from the API for the dropdown selection.
+             */
             self.loadUserAccounts = async function () {
                 var authToken = sessionStorage.getItem('authToken');
                 if (!authToken) {
-                    // Navigate to sign-in page if token is not found
                     CoreRouter.rootInstance.go({ path: "signin" });
                     return;
                 }
@@ -83,13 +104,15 @@ define([
                     self.accountsDataProvider(new ArrayDataProvider(self.accounts(), { keyAttributes: 'accountNumber' }));
                 } catch (error) {
                     self.showMessage(error.message || 'Error loading accounts. Please try again.', 'error');
-                    console.error(error);
                 } finally {
                     self.showLoading(false);
                 }
             };
 
-            // Validation Functions
+            /**
+             * Validates the source account selection.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateFromAccount = function () {
                 self.fromAccountError([]);
                 var value = self.fromAccount();
@@ -100,6 +123,11 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the destination account input.
+             * @param {string} toAccount - The destination account number to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateToAccount = function (toAccount) {
                 self.toAccountError([]);
                 var trimmedToAccount = toAccount ? toAccount.trim() : "";
@@ -114,6 +142,11 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the transfer amount.
+             * @param {number|null} amount - The amount to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateAmount = function (amount) {
                 self.amountError([]);
                 if (amount === null || amount === undefined) {
@@ -127,6 +160,11 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the branch input.
+             * @param {string} branch - The branch name to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateBranch = function (branch) {
                 self.branchError([]);
                 var trimmedBranch = branch ? branch.trim() : "";
@@ -141,6 +179,11 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the transfer description.
+             * @param {string} description - The description to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateDescription = function (description) {
                 self.descriptionError([]);
                 var trimmedDescription = description ? description.trim() : "";
@@ -155,7 +198,7 @@ define([
                 return true;
             };
 
-            // Real-time validation as user types or selects
+            // Subscribe to input changes for real-time validation
             self.fromAccount.subscribe(function (newValue) {
                 self.validateFromAccount();
             });
@@ -172,28 +215,44 @@ define([
                 self.validateDescription(newValue);
             });
 
-            // Validation on blur (optional, as real-time is covered by subscribe)
+            /**
+             * Validates destination account on blur event.
+             */
             self.onToAccountBlur = function () {
                 self.validateToAccount(self.toAccount());
             };
+
+            /**
+             * Validates amount on blur event.
+             */
             self.onAmountBlur = function () {
                 self.validateAmount(self.amount());
             };
+
+            /**
+             * Validates branch on blur event.
+             */
             self.onBranchBlur = function () {
                 self.validateBranch(self.branch());
             };
+
+            /**
+             * Validates description on blur event.
+             */
             self.onDescriptionBlur = function () {
                 self.validateDescription(self.description());
             };
 
-            // Transfer Money function with validation
+            /**
+             * Handles the money transfer process by validating inputs and making an API call.
+             * Redirects to dashboard on success, shows error message on failure.
+             */
             self.transferMoney = async function () {
                 var fromAccountNumber = self.fromAccount();
                 var toAccountNumber = self.toAccount() ? self.toAccount().trim() : "";
                 var amount = self.amount();
                 var branch = self.branch() ? self.branch().trim() : "";
                 var description = self.description() ? self.description().trim() : "";
-                // Validate all fields before submission
                 var isFromAccountValid = self.validateFromAccount();
                 var isToAccountValid = self.validateToAccount(toAccountNumber);
                 var isAmountValid = self.validateAmount(amount);
@@ -226,23 +285,22 @@ define([
                     }
                     await response.json();
                     self.showMessage('Transfer completed successfully!', 'success');
-                    // Reset form fields
                     self.fromAccount("");
                     self.toAccount("");
                     self.amount(null);
                     self.branch("");
                     self.description("");
-                    // Navigate to dashboard or accounts page after successful transfer
                     CoreRouter.rootInstance.go({ path: "dashboard" });
                 } catch (error) {
                     self.showMessage(error.message || 'Transfer failed. Please try again.', 'error');
-                    console.error(error);
                 } finally {
                     self.showLoading(false);
                 }
             };
 
-            // Initialize the component (load accounts on load)
+            /**
+             * Initializes the component by loading account data.
+             */
             self.initialize = function () {
                 self.loadUserAccounts();
             };

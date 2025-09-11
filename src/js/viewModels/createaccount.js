@@ -1,3 +1,11 @@
+/*
+    Document   : CreateAccountViewModel
+    Created on : Sep 9, 2025
+    Author     : Jayatheerth P Z
+    Description:
+        Handles the creation of a new bank account with form validation and API interaction.
+*/
+
 define([
     "knockout",
     "ojs/ojarraydataprovider",
@@ -8,14 +16,17 @@ define([
     "oj-c/button",
     "oj-c/form-layout",
     "oj-c/progress-circle"
-
 ],
     function (ko, ArrayDataProvider, CoreRouter) {
+        /**
+         * ViewModel for the Create Account page.
+         * Handles the creation of a new bank account with form validation and API interaction.
+         */
         function CreateAccountViewModel() {
             var self = this;
             // Observables for form fields
             self.accountType = ko.observable("");
-            self.currency = ko.observable("INR"); // Default to INR
+            self.currency = ko.observable("INR");
             self.branch = ko.observable("");
             self.initialDeposit = ko.observable(null);
             // Observables for validation errors
@@ -28,7 +39,6 @@ define([
             self.API_BASE = {
                 ACCOUNT: 'http://localhost:8085/accountservice/api/v1'
             };
-
             // Data for dropdowns
             self.accountTypes = [
                 { value: "SAVINGS", label: "Savings Account" },
@@ -41,30 +51,40 @@ define([
                 { value: "USD", label: "USD - US Dollar" },
                 { value: "EUR", label: "EUR - Euro" }
             ];
-
             // Data providers for dropdowns
             self.accountTypesDataProvider = new ArrayDataProvider(self.accountTypes, { keyAttributes: 'value' });
             self.currenciesDataProvider = new ArrayDataProvider(self.currencies, { keyAttributes: 'value' });
 
-            // Utility to show loading state
+            /**
+             * Controls the visibility of the loading overlay.
+             * @param {boolean} show - True to show the loading overlay, false to hide it.
+             */
             self.showLoading = function (show) {
                 self.isLoading(show);
-                console.log(show ? "Loading..." : "Loading complete");
             };
 
-            // Utility to show messages (temporary placeholder for UI feedback)
+            /**
+             * Displays a message to the user via an alert.
+             * @param {string} msg - The message to display.
+             * @param {string} type - The type of message ('success' or 'error').
+             */
             self.showMessage = function (msg, type) {
-                console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
 
-            // Utility to get auth headers
+            /**
+             * Retrieves authentication headers for API requests.
+             * @returns {Object} Headers object with Authorization token if available.
+             */
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
 
-            // Validation Functions
+            /**
+             * Validates the account type selection.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateAccountType = function () {
                 self.accountTypeError([]);
                 var value = self.accountType();
@@ -75,6 +95,10 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the currency selection.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateCurrency = function () {
                 self.currencyError([]);
                 var value = self.currency();
@@ -85,6 +109,11 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the branch input.
+             * @param {string} branch - The branch name to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateBranch = function (branch) {
                 self.branchError([]);
                 var trimmedBranch = branch ? branch.trim() : "";
@@ -99,6 +128,11 @@ define([
                 return true;
             };
 
+            /**
+             * Validates the initial deposit amount.
+             * @param {number|null} initialDeposit - The initial deposit amount to validate.
+             * @returns {boolean} True if valid, false otherwise.
+             */
             self.validateInitialDeposit = function (initialDeposit) {
                 self.initialDepositError([]);
                 if (initialDeposit === null || initialDeposit === undefined) {
@@ -112,7 +146,7 @@ define([
                 return true;
             };
 
-            // Real-time validation as user types or selects
+            // Subscribe to input changes for real-time validation
             self.accountType.subscribe(function (newValue) {
                 self.validateAccountType();
             });
@@ -126,19 +160,27 @@ define([
                 self.validateInitialDeposit(newValue);
             });
 
-            // Validation on blur (optional, as real-time is covered by subscribe)
+            /**
+             * Validates branch on blur event.
+             */
             self.onBranchBlur = function () {
                 self.validateBranch(self.branch());
             };
+
+            /**
+             * Validates initial deposit on blur event.
+             */
             self.onInitialDepositBlur = function () {
                 self.validateInitialDeposit(self.initialDeposit());
             };
 
-            // Create Account function with validation
+            /**
+             * Handles the account creation process by validating inputs and making an API call.
+             * Redirects to dashboard on success, shows error message on failure.
+             */
             self.createAccount = async function () {
                 var authToken = sessionStorage.getItem('authToken');
                 if (!authToken) {
-                    // Navigate to sign-in page if token is not found
                     CoreRouter.rootInstance.go({ path: "signin" });
                     return;
                 }
@@ -146,7 +188,6 @@ define([
                 var currency = self.currency();
                 var branch = self.branch() ? self.branch().trim() : "";
                 var initialDeposit = self.initialDeposit();
-                // Validate all fields before submission
                 var isAccountTypeValid = self.validateAccountType();
                 var isCurrencyValid = self.validateCurrency();
                 var isBranchValid = self.validateBranch(branch);
@@ -176,24 +217,23 @@ define([
                     }
                     await response.json();
                     self.showMessage('Account created successfully!', 'success');
-                    // Reset form fields
                     self.accountType("");
                     self.currency("INR");
                     self.branch("");
                     self.initialDeposit(null);
-                    // Navigate to dashboard or accounts page after successful creation
                     CoreRouter.rootInstance.go({ path: "dashboard" });
                 } catch (error) {
                     self.showMessage(error.message || 'Error creating account. Please try again.', 'error');
-                    console.error(error);
                 } finally {
                     self.showLoading(false);
                 }
             };
 
-            // Initialize the component (no API load needed on init)
+            /**
+             * Initializes the component.
+             */
             self.initialize = function () {
-                // Placeholder for any initialization logic if needed
+                // Placeholder for initialization logic if needed
             };
 
             // Call initialize when the component is loaded
