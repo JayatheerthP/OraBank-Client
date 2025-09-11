@@ -33,5 +33,13 @@
 }
 
 nav[data-bind*="visible: isNavbarVisible"][style*="display: block"] {
-  display: flex !important; /* Restore the original flex layout when visible */
+  display: flex !important;
+  /* Restore the original flex layout when visible */
+}
+
+
+#createAccountButton button, #transferButton button {
+  color: white !important;
+  outline: none !important;
+  border: none !important;
 }
