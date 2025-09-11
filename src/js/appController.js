@@ -21,6 +21,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
 
       // Observable to control navbar visibility
       self.isNavbarVisible = ko.observable(true);
+      self.authenticated = ko.observable(false);
 
       let navData = [
         { path: '', redirect: 'dashboard' },
@@ -62,6 +63,7 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
         var authToken = sessionStorage.getItem('authToken');
         var userId = sessionStorage.getItem('userId');
         if (!authToken || !userId) {
+          this.authenticated = false;
           return true; // No token or userId means not authorized
         }
         try {
@@ -74,11 +76,14 @@ define(['knockout', 'ojs/ojcontext', 'ojs/ojmodule-element-utils', 'ojs/ojknocko
           });
           if (!response.ok) {
             console.log("Authorization check failed with status:", response.status);
+            this.authenticated = false;
             return true; // Not authorized if API call fails (e.g., 401, 403)
           }
+          this.authenticated = true;
           return false; // Authorized if API call succeeds
         } catch (error) {
           console.error("Error during authorization check:", error);
+          this.authenticated = false;
           return true; // Consider not authorized on any error (e.g., network failure)
         }
       };

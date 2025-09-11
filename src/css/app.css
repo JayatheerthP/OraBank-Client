@@ -42,4 +42,5 @@ nav[data-bind*="visible: isNavbarVisible"][style*="display: block"] {
   color: white !important;
   outline: none !important;
   border: none !important;
+  width: fit-content !important;
 }

@@ -1,11 +1,12 @@
 define([
     "knockout",
+    "ojs/ojarraydataprovider",
+    "ojs/ojcorerouter",
     "oj-c/select-single",
     "ojs/ojtable",
-    "ojs/ojarraydataprovider",
-    "ojs/ojcorerouter" // Add CoreRouter for navigation
+    "oj-c/progress-circle"
 ],
-    function (ko, SelectSingle, ojtable, ArrayDataProvider, CoreRouter) {
+    function (ko, ArrayDataProvider, CoreRouter) {
         function StatementsViewModel() {
             var self = this;
             // Observables for data
@@ -15,10 +16,13 @@ define([
             self.statements = ko.observableArray([]);
             self.statementsDataProvider = ko.observable();
             self.statementsVisible = ko.observable(false);
+            // Observable for loading state
+            self.isLoading = ko.observable(false);
             self.API_BASE = {
                 ACCOUNT: 'http://localhost:8085/accountservice/api/v1',
                 TRANSACTION: 'http://localhost:8085/transactionservice/api/v1'
             };
+
             // Table columns definition for statements
             self.columns = [
                 { headerText: 'Date', field: 'date' },
@@ -28,20 +32,25 @@ define([
                 { headerText: 'Other Party', field: 'otherParty' },
                 { headerText: 'Status', field: 'status' }
             ];
-            // Utility to show loading state (placeholder)
+
+            // Utility to show loading state
             self.showLoading = function (show) {
+                self.isLoading(show);
                 console.log(show ? "Loading..." : "Loading complete");
             };
+
             // Utility to show messages (temporary placeholder for UI feedback)
             self.showMessage = function (msg, type) {
                 console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
+
             // Utility to get auth headers
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
+
             // Fetch user accounts from API for dropdown
             self.loadUserAccounts = async function () {
                 var authToken = sessionStorage.getItem('authToken');
@@ -60,19 +69,16 @@ define([
                         }
                     });
                     if (!response.ok) {
-                        // Attempt to parse error response body
                         const errorData = await response.json().catch(() => ({}));
                         const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
                         throw new Error(errorMessage);
                     }
                     const data = await response.json();
-                    // Format accounts for dropdown (assuming data.accounts is the array)
                     var accountList = (data.accounts || []).map(acc => ({
                         value: acc.accountNumber,
                         label: `${acc.accountNumber} (${acc.accountType})`
                     }));
                     self.accounts(accountList);
-                    // Update data provider for oj-c-select-single
                     self.accountsDataProvider(new ArrayDataProvider(self.accounts(), { keyAttributes: 'value' }));
                 } catch (error) {
                     self.showMessage(error.message || 'Error loading accounts. Please try again.', 'error');
@@ -81,6 +87,7 @@ define([
                     self.showLoading(false);
                 }
             };
+
             // Fetch statements for the selected account
             self.loadStatements = async function (accountNumber) {
                 if (!accountNumber) {
@@ -98,15 +105,12 @@ define([
                         }
                     });
                     if (!response.ok) {
-                        // Attempt to parse error response body
                         const errorData = await response.json().catch(() => ({}));
                         const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
                         throw new Error(errorMessage);
                     }
                     const data = await response.json();
-                    // Assuming data.transactions is the array of statements
                     self.statements(data.transactions || []);
-                    // Update data provider for oj-table
                     self.statementsDataProvider(new ArrayDataProvider(self.statements(), { keyAttributes: 'id' }));
                     self.statementsVisible(true);
                 } catch (error) {
@@ -117,16 +121,19 @@ define([
                     self.showLoading(false);
                 }
             };
+
             // Event handler for account selection change
             self.onAccountSelected = function (event) {
                 var selectedValue = event.detail.value;
                 self.selectedAccount(selectedValue);
                 self.loadStatements(selectedValue);
             };
+
             // Initialize the component (load accounts on load)
             self.initialize = function () {
                 self.loadUserAccounts();
             };
+
             // Call initialize when the component is loaded
             self.initialize();
         }

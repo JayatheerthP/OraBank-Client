@@ -5,7 +5,6 @@
             <h2 class="text-3xl font-bold text-gray-800">OraBank</h2>
             <p class="text-gray-600">Sign in to your OraBank account</p>
         </div>
-
         <oj-c-form-layout id="signinForm" max-columns="1" direction="column" class="space-y-6">
             <oj-c-input-text id="signinEmail" label-hint="Email Address" placeholder="Enter your email"
                 value="{{email}}" required="true" messages-custom="[[emailError]]" on-blur="[[onEmailBlur]]">
@@ -13,14 +12,20 @@
             <oj-c-input-password id="signinPassword" label-hint="Password" placeholder="Enter your password"
                 value="{{password}}" required="true" messages-custom="[[passwordError]]" on-blur="[[onPasswordBlur]]">
             </oj-c-input-password>
-
             <oj-c-button id="signinButton" label="Sign In" class="w-full" on-oj-action="[[signIn]]">
             </oj-c-button>
-
         </oj-c-form-layout>
         <div>
             <span>Don't have an account?</span>
             <a on-click="[[showSignUp]]">Sign Up</a>
         </div>
     </div>
+
+    <!-- Full-screen loading overlay -->
+    <oj-if test="[[isLoading]]">
+        <div
+            class="fixed inset-0 bg-gradient-to-br from-red-50 to-orange-50 bg-opacity-75 flex items-center justify-center z-50">
+            <oj-c-progress-circle size="md" value="-1"></oj-c-progress-circle>
+        </div>
+    </oj-if>
 </div>

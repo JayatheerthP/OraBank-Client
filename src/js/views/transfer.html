@@ -3,8 +3,8 @@
         <span class="text-3xl font-bold text-gray-800">Transfer Money</span>
         <span class="text-gray-600">Send money to another account</span>
     </div>
-    <div class="bg-white rounded-xl shadow-lg p-8 w-fit flex flex-col">
-        <oj-c-form-layout style="width: 28rem;" id="transferForm" max-columns="1" direction="column">
+    <div class="bg-white rounded-xl shadow-lg p-8 w-fit flex flex-col w-full">
+        <oj-c-form-layout id="transferForm" max-columns="2" direction="column">
             <oj-c-select-single id="fromAccount" label-hint="From Account" placeholder="Select Account"
                 value="{{fromAccount}}" data="[[accountsDataProvider]]" item-text="accountNumber" required="true"
                 messages-custom="[[fromAccountError]]" on-value-changed="[[validateFromAccount]]">
@@ -24,7 +24,13 @@
                 on-blur="[[onDescriptionBlur]]">
             </oj-c-text-area>
         </oj-c-form-layout>
-        <oj-c-button id="transferButton" label="Transfer Money" chroming="borderless" on-oj-action="[[transferMoney]]" class="bg-gradient-to-br from-red-600 to-red-700 rounded-lg">
+        <oj-c-button id="transferButton" label="Transfer Money" chroming="borderless" on-oj-action="[[transferMoney]]" class="bg-gradient-to-br from-red-600 to-red-700 rounded-lg w-fit mx-auto">
         </oj-c-button>
     </div>
+    <oj-if test="[[isLoading]]">
+        <div
+            class="fixed inset-0 bg-gradient-to-br from-red-50 to-orange-50 bg-opacity-75 flex items-center justify-center z-50">
+            <oj-c-progress-circle size="md" value="-1"></oj-c-progress-circle>
+        </div>
+    </oj-if>
 </div>

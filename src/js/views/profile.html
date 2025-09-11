@@ -3,14 +3,14 @@
         <span class="text-3xl font-bold text-gray-800">My Profile</span>
         <span class="text-gray-600">Manage your account information</span>
     </div>
-    <div class="bg-white rounded-xl shadow-lg p-8 w-fit flex flex-col gap-8">
+    <div class="bg-white rounded-xl shadow-lg p-8 w-full flex flex-col gap-8">
         <div class="flex flex-wrap items-center gap-2">
             <div class="bg-red-100 rounded-full p-6">
                 <i class="fa-regular fa-user text-4xl text-red-600"></i>
             </div>
             <span class="text-gray-600">OraBank Customer</span>
         </div>
-        <oj-c-form-layout id="profileForm" max-columns="1" direction="column" style="width: 28rem;">
+        <oj-c-form-layout id="profileForm" max-columns="2" direction="column">
             <oj-c-input-text id="profileFullName" label-hint="Full Name" value="{{fullName}}" readonly="true">
             </oj-c-input-text>
             <oj-c-input-text id="profileEmail" label-hint="Email" value="{{email}}" readonly="true">
@@ -23,4 +23,10 @@
             </oj-c-text-area>
         </oj-c-form-layout>
     </div>
+    <oj-if test="[[isLoading]]">
+        <div
+            class="fixed inset-0 bg-gradient-to-br from-red-50 to-orange-50 bg-opacity-75 flex items-center justify-center z-50">
+            <oj-c-progress-circle size="md" value="-1"></oj-c-progress-circle>
+        </div>
+    </oj-if>
 </div>

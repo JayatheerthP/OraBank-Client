@@ -1,15 +1,15 @@
 define([
     "knockout",
+    "ojs/ojarraydataprovider",
+    "ojs/ojcorerouter",
     "oj-c/input-text",
     "oj-c/input-number",
     "oj-c/text-area",
     "oj-c/select-single",
     "oj-c/button",
     "oj-c/form-layout",
-    "ojs/ojarraydataprovider",
-    "ojs/ojcorerouter" // Add CoreRouter for navigation
 ],
-    function (ko, InputText, InputNumber, TextArea, SelectSingle, Button, FormLayout, ArrayDataProvider, CoreRouter) {
+    function (ko, ArrayDataProvider, CoreRouter) {
         function TransferViewModel() {
             var self = this;
             // Observables for form fields
@@ -27,24 +27,31 @@ define([
             self.amountError = ko.observableArray([]);
             self.branchError = ko.observableArray([]);
             self.descriptionError = ko.observableArray([]);
+            // Observable for loading state
+            self.isLoading = ko.observable(false);
             self.API_BASE = {
                 ACCOUNT: 'http://localhost:8085/accountservice/api/v1',
                 TRANSACTION: 'http://localhost:8085/transactionservice/api/v1'
             };
-            // Utility to show loading state (placeholder)
+
+            // Utility to show loading state
             self.showLoading = function (show) {
+                self.isLoading(show);
                 console.log(show ? "Loading..." : "Loading complete");
             };
+
             // Utility to show messages (temporary placeholder for UI feedback)
             self.showMessage = function (msg, type) {
                 console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
+
             // Utility to get auth headers
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
+
             // Fetch user accounts for dropdown
             self.loadUserAccounts = async function () {
                 var authToken = sessionStorage.getItem('authToken');
@@ -63,19 +70,16 @@ define([
                         }
                     });
                     if (!response.ok) {
-                        // Attempt to parse error response body
                         const errorData = await response.json().catch(() => ({}));
                         const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
                         throw new Error(errorMessage);
                     }
                     const data = await response.json();
-                    // Format accounts for dropdown (assuming data.accounts is the array)
                     var accountList = (data.accounts || []).map(acc => ({
                         accountNumber: acc.accountNumber,
                         label: `${acc.accountNumber} (${acc.accountType})`
                     }));
                     self.accounts(accountList);
-                    // Update data provider for oj-c-select-single
                     self.accountsDataProvider(new ArrayDataProvider(self.accounts(), { keyAttributes: 'accountNumber' }));
                 } catch (error) {
                     self.showMessage(error.message || 'Error loading accounts. Please try again.', 'error');
@@ -84,6 +88,7 @@ define([
                     self.showLoading(false);
                 }
             };
+
             // Validation Functions
             self.validateFromAccount = function () {
                 self.fromAccountError([]);
@@ -94,6 +99,7 @@ define([
                 }
                 return true;
             };
+
             self.validateToAccount = function (toAccount) {
                 self.toAccountError([]);
                 var trimmedToAccount = toAccount ? toAccount.trim() : "";
@@ -107,6 +113,7 @@ define([
                 }
                 return true;
             };
+
             self.validateAmount = function (amount) {
                 self.amountError([]);
                 if (amount === null || amount === undefined) {
@@ -119,6 +126,7 @@ define([
                 }
                 return true;
             };
+
             self.validateBranch = function (branch) {
                 self.branchError([]);
                 var trimmedBranch = branch ? branch.trim() : "";
@@ -132,6 +140,7 @@ define([
                 }
                 return true;
             };
+
             self.validateDescription = function (description) {
                 self.descriptionError([]);
                 var trimmedDescription = description ? description.trim() : "";
@@ -145,6 +154,7 @@ define([
                 }
                 return true;
             };
+
             // Real-time validation as user types or selects
             self.fromAccount.subscribe(function (newValue) {
                 self.validateFromAccount();
@@ -161,6 +171,7 @@ define([
             self.description.subscribe(function (newValue) {
                 self.validateDescription(newValue);
             });
+
             // Validation on blur (optional, as real-time is covered by subscribe)
             self.onToAccountBlur = function () {
                 self.validateToAccount(self.toAccount());
@@ -174,6 +185,7 @@ define([
             self.onDescriptionBlur = function () {
                 self.validateDescription(self.description());
             };
+
             // Transfer Money function with validation
             self.transferMoney = async function () {
                 var fromAccountNumber = self.fromAccount();
@@ -208,7 +220,6 @@ define([
                         })
                     });
                     if (!response.ok) {
-                        // Attempt to parse error response body
                         const errorData = await response.json().catch(() => ({}));
                         const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
                         throw new Error(errorMessage);
@@ -230,10 +241,12 @@ define([
                     self.showLoading(false);
                 }
             };
+
             // Initialize the component (load accounts on load)
             self.initialize = function () {
                 self.loadUserAccounts();
             };
+
             // Call initialize when the component is loaded
             self.initialize();
         }

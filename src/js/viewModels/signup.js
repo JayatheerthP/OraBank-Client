@@ -24,18 +24,24 @@ define([
             self.phoneNumberError = ko.observableArray([]);
             self.passwordError = ko.observableArray([]);
             self.addressError = ko.observableArray([]);
+            // Observable for loading state
+            self.isLoading = ko.observable(false);
             self.API_BASE = {
                 USER: 'http://localhost:8085/userservice/api/v1'
             };
-            // Utility to show loading state (placeholder)
+
+            // Utility to show loading state
             self.showLoading = function (show) {
+                self.isLoading(show);
                 console.log(show ? "Loading..." : "Loading complete");
             };
+
             // Utility to show general messages (temporary placeholder)
             self.showMessage = function (msg, type) {
                 console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
+
             // Validation Functions with Trimming for Mandatory Fields
             self.validateFullName = function (fullName) {
                 self.fullNameError([]);
@@ -50,6 +56,7 @@ define([
                 }
                 return true;
             };
+
             self.validateEmail = function (email) {
                 self.emailError([]);
                 var trimmedEmail = email ? email.trim() : "";
@@ -64,6 +71,7 @@ define([
                 }
                 return true;
             };
+
             self.validatePhoneNumber = function (phoneNumber) {
                 self.phoneNumberError([]);
                 var trimmedPhoneNumber = phoneNumber ? phoneNumber.trim() : "";
@@ -78,6 +86,7 @@ define([
                 }
                 return true;
             };
+
             self.validatePassword = function (password) {
                 self.passwordError([]);
                 var trimmedPassword = password ? password.trim() : "";
@@ -91,6 +100,7 @@ define([
                 }
                 return true;
             };
+
             self.validateAddress = function (address) {
                 self.addressError([]);
                 var trimmedAddress = address ? address.trim() : "";
@@ -104,6 +114,7 @@ define([
                 }
                 return true;
             };
+
             // Real-time validation as user types
             self.fullName.subscribe(function (newValue) {
                 self.validateFullName(newValue);
@@ -120,6 +131,7 @@ define([
             self.address.subscribe(function (newValue) {
                 self.validateAddress(newValue);
             });
+
             // Validation on blur (optional, as real-time is covered by subscribe)
             self.onFullNameBlur = function () {
                 self.validateFullName(self.fullName());
@@ -136,13 +148,14 @@ define([
             self.onAddressBlur = function () {
                 self.validateAddress(self.address());
             };
+
             // Sign Up function with validation
             self.signUp = async function () {
                 var fields = {
-                    fullName: self.fullName() ? self.fullName().trim() : "", // Trim before sending
+                    fullName: self.fullName() ? self.fullName().trim() : "",
                     email: self.email() ? self.email().trim() : "",
                     phoneNumber: self.phoneNumber() ? self.phoneNumber().trim() : "",
-                    dateOfBirth: self.dateOfBirth(), // Pass as is, no validation
+                    dateOfBirth: self.dateOfBirth(),
                     password: self.password() ? self.password().trim() : "",
                     address: self.address() ? self.address().trim() : ""
                 };
@@ -165,14 +178,12 @@ define([
                         body: JSON.stringify(fields)
                     });
                     if (!response.ok) {
-                        // Attempt to parse error response body
                         const errorData = await response.json().catch(() => ({}));
                         const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
                         throw new Error(errorMessage);
                     }
                     await response.json();
                     self.showMessage('Account created successfully! Please sign in.', 'success');
-                    // Navigate to sign-in page using CoreRouter
                     CoreRouter.rootInstance.go({ path: "signin" });
                 } catch (error) {
                     self.showMessage(error.message || 'Error creating account. Please try again.', 'error');
@@ -180,9 +191,9 @@ define([
                     self.showLoading(false);
                 }
             };
+
             // Navigation to Sign In page
             self.showSignIn = function () {
-                // Navigate to sign-in page using CoreRouter
                 CoreRouter.rootInstance.go({ path: "signin" });
             };
         }

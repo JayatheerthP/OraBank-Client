@@ -1,14 +1,16 @@
 define([
     "knockout",
+    "ojs/ojarraydataprovider",
+    "ojs/ojcorerouter",
     "oj-c/input-text",
     "oj-c/input-number",
     "oj-c/select-single",
     "oj-c/button",
     "oj-c/form-layout",
-    "ojs/ojarraydataprovider",
-    "ojs/ojcorerouter" // Add CoreRouter for navigation
+    "oj-c/progress-circle"
+
 ],
-    function (ko, InputText, InputNumber, SelectSingle, Button, FormLayout, ArrayDataProvider, CoreRouter) {
+    function (ko, ArrayDataProvider, CoreRouter) {
         function CreateAccountViewModel() {
             var self = this;
             // Observables for form fields
@@ -21,9 +23,12 @@ define([
             self.currencyError = ko.observableArray([]);
             self.branchError = ko.observableArray([]);
             self.initialDepositError = ko.observableArray([]);
+            // Observable for loading state
+            self.isLoading = ko.observable(false);
             self.API_BASE = {
                 ACCOUNT: 'http://localhost:8085/accountservice/api/v1'
             };
+
             // Data for dropdowns
             self.accountTypes = [
                 { value: "SAVINGS", label: "Savings Account" },
@@ -36,23 +41,29 @@ define([
                 { value: "USD", label: "USD - US Dollar" },
                 { value: "EUR", label: "EUR - Euro" }
             ];
+
             // Data providers for dropdowns
             self.accountTypesDataProvider = new ArrayDataProvider(self.accountTypes, { keyAttributes: 'value' });
             self.currenciesDataProvider = new ArrayDataProvider(self.currencies, { keyAttributes: 'value' });
-            // Utility to show loading state (placeholder)
+
+            // Utility to show loading state
             self.showLoading = function (show) {
+                self.isLoading(show);
                 console.log(show ? "Loading..." : "Loading complete");
             };
+
             // Utility to show messages (temporary placeholder for UI feedback)
             self.showMessage = function (msg, type) {
                 console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
+
             // Utility to get auth headers
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
+
             // Validation Functions
             self.validateAccountType = function () {
                 self.accountTypeError([]);
@@ -63,6 +74,7 @@ define([
                 }
                 return true;
             };
+
             self.validateCurrency = function () {
                 self.currencyError([]);
                 var value = self.currency();
@@ -72,6 +84,7 @@ define([
                 }
                 return true;
             };
+
             self.validateBranch = function (branch) {
                 self.branchError([]);
                 var trimmedBranch = branch ? branch.trim() : "";
@@ -85,6 +98,7 @@ define([
                 }
                 return true;
             };
+
             self.validateInitialDeposit = function (initialDeposit) {
                 self.initialDepositError([]);
                 if (initialDeposit === null || initialDeposit === undefined) {
@@ -97,6 +111,7 @@ define([
                 }
                 return true;
             };
+
             // Real-time validation as user types or selects
             self.accountType.subscribe(function (newValue) {
                 self.validateAccountType();
@@ -110,6 +125,7 @@ define([
             self.initialDeposit.subscribe(function (newValue) {
                 self.validateInitialDeposit(newValue);
             });
+
             // Validation on blur (optional, as real-time is covered by subscribe)
             self.onBranchBlur = function () {
                 self.validateBranch(self.branch());
@@ -117,6 +133,7 @@ define([
             self.onInitialDepositBlur = function () {
                 self.validateInitialDeposit(self.initialDeposit());
             };
+
             // Create Account function with validation
             self.createAccount = async function () {
                 var authToken = sessionStorage.getItem('authToken');
@@ -153,7 +170,6 @@ define([
                         })
                     });
                     if (!response.ok) {
-                        // Attempt to parse error response body
                         const errorData = await response.json().catch(() => ({}));
                         const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
                         throw new Error(errorMessage);
@@ -174,10 +190,12 @@ define([
                     self.showLoading(false);
                 }
             };
+
             // Initialize the component (no API load needed on init)
             self.initialize = function () {
                 // Placeholder for any initialization logic if needed
             };
+
             // Call initialize when the component is loaded
             self.initialize();
         }

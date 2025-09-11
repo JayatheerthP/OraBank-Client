@@ -1,30 +1,38 @@
 define([
   "knockout",
+  "ojs/ojcorerouter",
   "oj-c/button",
   "oj-c/form-layout",
-  "ojs/ojcorerouter" // Add CoreRouter for navigation
+  "oj-c/progress-circle"
 ],
-  function (ko, Button, FormLayout, CoreRouter) {
+  function (ko, CoreRouter) {
     function DashboardViewModel() {
       var self = this;
       // Observables for account data
       self.accounts = ko.observableArray([]);
+      // Observable for loading state
+      self.isLoading = ko.observable(false);
       self.API_BASE = {
         ACCOUNT: 'http://localhost:8085/accountservice/api/v1'
       };
-      // Utility to show loading state (placeholder)
+
+      // Utility to show loading state
       self.showLoading = function (show) {
+        self.isLoading(show);
         console.log(show ? "Loading..." : "Loading complete");
       };
+
       // Utility to show messages (temporary placeholder for UI feedback)
       self.showMessage = function (msg, type) {
         alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
       };
+
       // Utility to get auth headers
       self.getAuthHeaders = function () {
         var authToken = sessionStorage.getItem('authToken');
         return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
       };
+
       // Function to render account cards manually
       self.renderAccountCards = function (accounts) {
         var container = document.getElementById('accountCards');
@@ -45,7 +53,6 @@ define([
           cardDiv.innerHTML = `
           <div class="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-600 hover:shadow-xl transition-shadow">
             <div class="flex justify-between items-start mb-4">
-
               <div class="flex flex-col gap-1 flex-wrap">
                 <span class="text-xl font-bold text-gray-800">${account.accountType || 'N/A'} Account</span>
                 <span class="text-gray-600">${account.branch}</span>
@@ -53,9 +60,7 @@ define([
               <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-semibold">
                 ${account.isActive ? 'ACTIVE' : 'INACTIVE'}
               </span>
-
             </div>
-
             <div class="space-y-3">
               <div class="flex justify-between">
                 <span class="text-gray-600">Account Number:</span>
@@ -75,6 +80,7 @@ define([
           container.appendChild(cardDiv);
         });
       };
+
       // Fetch user accounts from API
       self.loadUserAccounts = async function () {
         var authToken = sessionStorage.getItem('authToken');
@@ -93,16 +99,13 @@ define([
             }
           });
           if (!response.ok) {
-            // Attempt to parse error response body
             const errorData = await response.json().catch(() => ({}));
             const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
             throw new Error(errorMessage);
           }
           const data = await response.json();
-          // Assuming data.accounts is the array of accounts
           var fetchedAccounts = data.accounts || [];
           self.accounts(fetchedAccounts);
-          // Render account cards manually
           self.renderAccountCards(fetchedAccounts);
         } catch (error) {
           self.showMessage(error.message || 'Error loading accounts. Please try again.', 'error');
@@ -111,22 +114,24 @@ define([
           self.showLoading(false);
         }
       };
+
       // Quick action navigation functions using CoreRouter
       self.showTransferView = function () {
         CoreRouter.rootInstance.go({ path: "transfer" });
       };
       self.showStatementView = function () {
-
-        CoreRouter.rootInstance.go({ path: "statement" });
+        CoreRouter.rootInstance.go({ path: "statements" });
       };
       self.showCreateAccountView = function () {
         console.log("Navigating to Create Account view...");
         CoreRouter.rootInstance.go({ path: "createaccount" });
       };
+
       // Initialize the component (load data on load)
       self.initialize = function () {
         self.loadUserAccounts();
       };
+
       // Call initialize when the component is loaded
       self.initialize();
     }

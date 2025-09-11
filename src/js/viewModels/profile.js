@@ -1,12 +1,13 @@
 define([
     "knockout",
+    "ojs/ojcorerouter",
     "oj-c/input-text",
     "oj-c/text-area",
     "oj-c/input-date-picker",
     "oj-c/form-layout",
-    "ojs/ojcorerouter" // Add CoreRouter for potential navigation
+    "oj-c/progress-circle"
 ],
-    function (ko, InputText, TextArea, InputDatePicker, FormLayout, CoreRouter) {
+    function (ko, CoreRouter) {
         function ProfileViewModel() {
             var self = this;
             // Observables for profile data
@@ -15,23 +16,30 @@ define([
             self.phoneNumber = ko.observable("");
             self.dateOfBirth = ko.observable();
             self.address = ko.observable("");
+            // Observable for loading state
+            self.isLoading = ko.observable(false);
             self.API_BASE = {
                 USER: 'http://localhost:8085/userservice/api/v1'
             };
-            // Utility to show loading state (placeholder)
+
+            // Utility to show loading state
             self.showLoading = function (show) {
+                self.isLoading(show);
                 console.log(show ? "Loading..." : "Loading complete");
             };
+
             // Utility to show messages (temporary placeholder for UI feedback)
             self.showMessage = function (msg, type) {
                 console.log(type + ": " + msg);
                 alert(type === 'success' ? 'Success: ' + msg : 'Error: ' + msg);
             };
+
             // Utility to get auth headers
             self.getAuthHeaders = function () {
                 var authToken = sessionStorage.getItem('authToken');
                 return authToken ? { 'Authorization': 'Bearer ' + authToken } : {};
             };
+
             // Fetch user profile data from API
             self.loadUserProfile = async function () {
                 var userId = sessionStorage.getItem('userId');
@@ -50,7 +58,6 @@ define([
                         }
                     });
                     if (!response.ok) {
-                        // Attempt to parse error response body
                         const errorData = await response.json().catch(() => ({}));
                         const errorMessage = errorData.message || `HTTP error! Status: ${response.status}`;
                         throw new Error(errorMessage);
@@ -69,12 +76,15 @@ define([
                     self.showLoading(false);
                 }
             };
+
             // Initialize the component (load profile data on load)
             self.initialize = function () {
                 self.loadUserProfile();
             };
+
             // Call initialize when the component is loaded
             self.initialize();
+
             // Optional: Function to navigate back to dashboard or sign-in if needed
             self.goToSignIn = function () {
                 CoreRouter.rootInstance.go({ path: "signin" });

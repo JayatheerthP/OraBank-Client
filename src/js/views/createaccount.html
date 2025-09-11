@@ -3,9 +3,8 @@
         <span class="text-3xl font-bold text-gray-800">Create New Account</span>
         <span class="text-gray-600">Open a new bank account</span>
     </div>
-    <div class="bg-white rounded-xl shadow-lg p-8 w-fit flex flex-col">
-        <oj-c-form-layout id="createAccountForm" max-columns="1" direction="column" class="space-y-6"
-            style="width: 28rem;">
+    <div class="bg-white rounded-xl shadow-lg p-8 w-full flex flex-col">
+        <oj-c-form-layout id="createAccountForm" max-columns="2" direction="column" class="space-y-6">
             <oj-c-select-single id="accountType" label-hint="Account Type" placeholder="Select Account Type"
                 value="{{accountType}}" data="[[accountTypesDataProvider]]" item-text="label" required="true"
                 messages-custom="[[accountTypeError]]" on-value-changed="[[validateAccountType]]">
@@ -22,9 +21,15 @@
                 on-blur="[[onInitialDepositBlur]]">
             </oj-c-input-number>
         </oj-c-form-layout>
-        <oj-c-button chroming="borderless" class="bg-gradient-to-br from-red-600 to-red-700 rounded-lg"
+        <oj-c-button chroming="borderless" class="bg-gradient-to-br from-red-600 to-red-700 rounded-lg w-fit mx-auto"
             id="createAccountButton" label="Create Account" on-oj-action="[[createAccount]]">
         </oj-c-button>
 
     </div>
+    <oj-if test="[[isLoading]]">
+        <div
+            class="fixed inset-0 bg-gradient-to-br from-red-50 to-orange-50 bg-opacity-75 flex items-center justify-center z-50">
+            <oj-c-progress-circle size="md" value="-1"></oj-c-progress-circle>
+        </div>
+    </oj-if>
 </div>
