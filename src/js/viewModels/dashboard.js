@@ -72,7 +72,7 @@ define([
               </div>
               <div class="flex justify-between">
                 <span class="text-gray-600">Balance:</span>
-                <span class="font-bold text-green-600 text-xl">₹${account.balance ? account.balance.toLocaleString() : '0.00'}</span>
+                <span class="font-bold text-green-600 text-xl">₹${account.balance ? account.balance : '0.00'}</span>
               </div>
             </div>         
           </div>

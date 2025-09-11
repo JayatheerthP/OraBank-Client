@@ -15,10 +15,15 @@
                         <oj-bind-text value="[[row.data.accountType]]"></oj-bind-text>
                     </td>
                     <td>
-                        ₹<oj-bind-text value="[[row.data.balance.toLocaleString()]]"></oj-bind-text>
+                        ₹<oj-bind-text value="[[row.data.balance]]"></oj-bind-text>
                     </td>
                     <td>
                         <oj-bind-text value="[[row.data.isActive ? 'Active' : 'Inactive']]"></oj-bind-text>
+                    </td>
+                    <td>
+                        <oj-c-button label="Download Statement"
+                            on-oj-action="[[()=>$context.$module.downloadAccountStatement(row.data.accountNumber);]]">
+                        </oj-c-button>
                     </td>
                 </tr>
             </template>
