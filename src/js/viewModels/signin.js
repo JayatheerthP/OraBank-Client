@@ -26,7 +26,7 @@ define([
             self.password = ko.observable("");
             self.emailError = ko.observableArray([]);
             self.passwordError = ko.observableArray([]);
-            self.isLoading = ko.observable(true);
+            self.isLoading = ko.observable(false);
             self.API_BASE = {
                 USER: 'http://localhost:8085/userservice/api/v1'
             };
