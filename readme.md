@@ -57,7 +57,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Email should be valid",
-      "status": "BAD_REQUEST",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -65,7 +65,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Email already registered",
-      "status": "CONFLICT",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -93,7 +93,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Email is mandatory",
-      "status": "BAD_REQUEST",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -101,7 +101,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Authentication failed or account is locked",
-      "status": "UNAUTHORIZED",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -130,7 +130,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Invalid or missing token",
-      "status": "UNAUTHORIZED",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -138,7 +138,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "User not found",
-      "status": "NOT_FOUND",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -162,7 +162,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Invalid or missing token",
-      "status": "UNAUTHORIZED",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -170,7 +170,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "User not found",
-      "status": "NOT_FOUND",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -212,7 +212,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Currency must be a 3-letter code (e.g., USD)",
-      "status": "BAD_REQUEST",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -220,7 +220,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Invalid or missing token",
-      "status": "UNAUTHORIZED",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -248,7 +248,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Invalid or missing token",
-      "status": "UNAUTHORIZED",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -256,7 +256,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Account not found",
-      "status": "NOT_FOUND",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -286,7 +286,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Invalid or missing token",
-      "status": "UNAUTHORIZED",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -310,7 +310,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Invalid or missing token",
-      "status": "UNAUTHORIZED",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -318,7 +318,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Account not found",
-      "status": "NOT_FOUND",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -349,7 +349,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Amount must be greater than 0",
-      "status": "BAD_REQUEST",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -357,7 +357,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Invalid or missing token",
-      "status": "UNAUTHORIZED",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -365,7 +365,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Account is inactive or locked",
-      "status": "FORBIDDEN",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -373,7 +373,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Account not found",
-      "status": "NOT_FOUND",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -416,7 +416,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Amount must be greater than 0",
-      "status": "BAD_REQUEST",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -424,7 +424,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Invalid or missing token",
-      "status": "UNAUTHORIZED",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -432,7 +432,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Insufficient balance",
-      "status": "FORBIDDEN",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -440,7 +440,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Account not found",
-      "status": "NOT_FOUND",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -472,7 +472,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Invalid or missing token",
-      "status": "UNAUTHORIZED",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
@@ -480,7 +480,7 @@ All error responses follow a standardized structure as defined by the `ErrorResp
     ```json
     {
       "message": "Account not found",
-      "status": "NOT_FOUND",
+      "status": 000,
       "timestamp": "2023-10-01T10:00:00"
     }
     ```
