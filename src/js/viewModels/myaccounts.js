@@ -152,7 +152,6 @@ define([
                         });
                     }
                     doc.save(`Account_Statement_${accountNumber}.pdf`);
-                    self.showMessage('Statement downloaded successfully!', 'success');
                 } catch (error) {
                     self.showMessage(error.message || 'Error downloading statement. Please try again.', 'error');
                 } finally {
